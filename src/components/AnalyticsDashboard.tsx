@@ -3,7 +3,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, LineChart, Line, PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
-import { TrendingUp, Users, Wifi, Television, DollarSign, Calendar } from 'lucide-react';
+import { TrendingUp, Users, Wifi, Tv, DollarSign, Calendar } from 'lucide-react';
 
 export const AnalyticsDashboard = () => {
   const revenueData = [
@@ -95,7 +95,7 @@ export const AnalyticsDashboard = () => {
       <Card className="lg:col-span-2">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Television className="h-5 w-5" />
+            <Tv className="h-5 w-5" />
             Most Popular Plans
           </CardTitle>
         </CardHeader>
