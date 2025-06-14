@@ -9,7 +9,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Eye, EyeOff, Zap } from 'lucide-react';
 
 const Login = () => {
-  const [email, setEmail] = useState('');
+  const [userId, setUserId] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -22,7 +22,7 @@ const Login = () => {
 
     // Simulate login process
     setTimeout(() => {
-      if (email && password) {
+      if (userId && password) {
         toast({
           title: "Login successful",
           description: "Welcome to Recharge Pulse Insight!",
@@ -31,7 +31,7 @@ const Login = () => {
       } else {
         toast({
           title: "Login failed",
-          description: "Please enter both email and password.",
+          description: "Please enter both User ID and password.",
           variant: "destructive",
         });
       }
@@ -56,13 +56,13 @@ const Login = () => {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="userId">User ID</Label>
               <Input
-                id="email"
-                type="email"
-                placeholder="Enter your email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                id="userId"
+                type="text"
+                placeholder="Enter your User ID"
+                value={userId}
+                onChange={(e) => setUserId(e.target.value)}
                 required
               />
             </div>
