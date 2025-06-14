@@ -37,6 +37,20 @@ export const RechargeTracker = () => {
   const [serviceFilter, setServiceFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
 
+  // Company options by service
+  const tvCompanies = [
+    { value: "Airtel Digital TV", label: "Airtel Digital TV" },
+    { value: "Tata Play", label: "Tata Play" },
+    { value: "Dish TV", label: "Dish TV" },
+    { value: "Videocon d2h", label: "Videocon d2h" }
+  ];
+  const internetCompanies = [
+    { value: "JioFiber", label: "JioFiber" },
+    { value: "Airtel Xstream", label: "Airtel Xstream" },
+    { value: "ACT", label: "ACT" },
+    { value: "BSNL Broadband", label: "BSNL Broadband" }
+  ];
+
   const filteredRecharges = recharges.filter(recharge => {
     const matchesSearch = recharge.customer.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          recharge.pack.toLowerCase().includes(searchTerm.toLowerCase());
@@ -129,7 +143,7 @@ export const RechargeTracker = () => {
             value={newRecharge.customer}
             onChange={(e) => setNewRecharge({ ...newRecharge, customer: e.target.value })}
           />
-          <Select value={newRecharge.service} onValueChange={(value) => setNewRecharge({ ...newRecharge, service: value })}>
+          <Select value={newRecharge.service} onValueChange={(value) => setNewRecharge({ ...newRecharge, service: value, company: '' })}>
             <SelectTrigger>
               <SelectValue placeholder="Service Type" />
             </SelectTrigger>
@@ -138,11 +152,31 @@ export const RechargeTracker = () => {
               <SelectItem value="Internet">Broadband</SelectItem>
             </SelectContent>
           </Select>
-          <Input
-            placeholder="Company"
+          {/* Company dropdown */}
+          <Select
             value={newRecharge.company}
-            onChange={(e) => setNewRecharge({ ...newRecharge, company: e.target.value })}
-          />
+            onValueChange={(value) => setNewRecharge({ ...newRecharge, company: value })}
+            disabled={!newRecharge.service}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Company" />
+            </SelectTrigger>
+            <SelectContent>
+              {newRecharge.service === "TV" &&
+                tvCompanies.map(company => (
+                  <SelectItem key={company.value} value={company.value}>{company.label}</SelectItem>
+                ))}
+              {newRecharge.service === "Internet" &&
+                internetCompanies.map(company => (
+                  <SelectItem key={company.value} value={company.value}>{company.label}</SelectItem>
+                ))}
+              {!newRecharge.service && (
+                <SelectItem value="" disabled>
+                  Select service first
+                </SelectItem>
+              )}
+            </SelectContent>
+          </Select>
           <Input
             placeholder="Pack/Plan Name"
             type="text"
