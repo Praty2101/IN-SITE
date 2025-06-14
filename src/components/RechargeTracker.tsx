@@ -37,18 +37,14 @@ export const RechargeTracker = () => {
   const [serviceFilter, setServiceFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
 
-  // Company options by service
+  // Company options by service (UPDATED)
   const tvCompanies = [
-    { value: "Airtel Digital TV", label: "Airtel Digital TV" },
-    { value: "Tata Play", label: "Tata Play" },
-    { value: "Dish TV", label: "Dish TV" },
-    { value: "Videocon d2h", label: "Videocon d2h" }
+    { value: "SITI", label: "SITI" },
+    { value: "GTPL", label: "GTPL" }
   ];
   const internetCompanies = [
-    { value: "JioFiber", label: "JioFiber" },
-    { value: "Airtel Xstream", label: "Airtel Xstream" },
-    { value: "ACT", label: "ACT" },
-    { value: "BSNL Broadband", label: "BSNL Broadband" }
+    { value: "Alliance", label: "Alliance" },
+    { value: "GTPL", label: "GTPL" }
   ];
 
   const filteredRecharges = recharges.filter(recharge => {
