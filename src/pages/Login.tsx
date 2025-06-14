@@ -8,6 +8,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useToast } from '@/hooks/use-toast';
 import { Eye, EyeOff, Zap } from 'lucide-react';
 
+const DEMO_USER_ID = "demo";
+const DEMO_PASSWORD = "demo123";
+
 const Login = () => {
   const [userId, setUserId] = useState('');
   const [password, setPassword] = useState('');
@@ -20,9 +23,8 @@ const Login = () => {
     e.preventDefault();
     setIsLoading(true);
 
-    // Simulate login process
     setTimeout(() => {
-      if (userId && password) {
+      if (userId === DEMO_USER_ID && password === DEMO_PASSWORD) {
         toast({
           title: "Login successful",
           description: "Welcome to Recharge Pulse Insight!",
@@ -31,7 +33,7 @@ const Login = () => {
       } else {
         toast({
           title: "Login failed",
-          description: "Please enter both User ID and password.",
+          description: "Please use demo / demo123 to log in as service provider.",
           variant: "destructive",
         });
       }
@@ -98,10 +100,8 @@ const Login = () => {
           </form>
           <div className="mt-6 text-center">
             <p className="text-sm text-muted-foreground">
-              Don't have an account?{" "}
-              <Button variant="link" className="p-0 h-auto">
-                Sign up
-              </Button>
+              Demo User ID: <span className="font-semibold">demo</span> <br />
+              Demo Password: <span className="font-semibold">demo123</span>
             </p>
           </div>
         </CardContent>
