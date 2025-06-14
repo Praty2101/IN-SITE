@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -6,6 +6,57 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { Trash2, Search, Filter, TrendingUp } from 'lucide-react';
+
+// SITI Cable TV packs (add only once, includes all the options you pasted)
+const SITI_PACKS = [
+  { label: "SITI FAMILY PACK-250", value: "SITI FAMILY PACK-250", channelCount: 111, price: 211.86 },
+  { label: "SFP BENGALI HINDI 320", value: "SFP BENGALI HINDI 320", channelCount: 141, price: 271.19 },
+  { label: "SFP BENGALI HINDI 380", value: "SFP BENGALI HINDI 380", channelCount: 146, price: 322.03 },
+  { label: "SFP BENGALI HINDI 450", value: "SFP BENGALI HINDI 450", channelCount: 157, price: 381.36 },
+  { label: "SITI FAMILY PACK-490", value: "SITI FAMILY PACK-490", channelCount: 148, price: 415.25 },
+  { label: "SFP BENGALI HINDI HD 600", value: "SFP BENGALI HINDI HD 600", channelCount: 171, price: 508.48 },
+  { label: "SFP BENGALI HINDI 320", value: "SFP BENGALI HINDI 320", channelCount: 154, price: 271.19 },
+  { label: "SFP BENGALI HINDI 380", value: "SFP BENGALI HINDI 380", channelCount: 159, price: 322.03 },
+  { label: "SFP BENGALI HINDI 450", value: "SFP BENGALI HINDI 450", channelCount: 170, price: 381.36 },
+  { label: "SITI FAMILY PACK-490", value: "SITI FAMILY PACK-490", channelCount: 161, price: 415.25 },
+  { label: "SFP BENGALI HINDI HD 600", value: "SFP BENGALI HINDI HD 600", channelCount: 184, price: 508.48 },
+  { label: "SFP TELUGU-350", value: "SFP TELUGU-350", channelCount: 138, price: 296.61 },
+  { label: "SFP TELUGU-350", value: "SFP TELUGU-350", channelCount: 124, price: 296.61 },
+  { label: "SITI FAMILY PACK-250", value: "SITI FAMILY PACK-250", channelCount: 123, price: 211.86 },
+  { label: "SFP BENGALI HINDI HD 350", value: "SFP BENGALI HINDI HD 350", channelCount: 116, price: 296.61 },
+  { label: "SITI-FAMILY HD -410", value: "SITI-FAMILY HD -410", channelCount: 129, price: 347.46 },
+  { label: "SITI-FAMILY HD-410", value: "SITI-FAMILY HD-410", channelCount: 117, price: 347.46 },
+  { label: "SITI FAMILY PACK ORIYA - 225", value: "SITI FAMILY PACK ORIYA - 225", channelCount: 110, price: 190.68 },
+  { label: "SITI-FAMILY HINDI 475", value: "SITI-FAMILY HINDI 475", channelCount: 159, price: 402.54 },
+  { label: "SITI FAMILY PACK ORIYA - 205", value: "SITI FAMILY PACK ORIYA - 205", channelCount: 70, price: 173.73 },
+  { label: "SFP HINDI - 250", value: "SFP HINDI - 250", channelCount: 77, price: 211.86 },
+  { label: "SFP BENGALI HINDI HD 500", value: "SFP BENGALI HINDI HD 500", channelCount: 130, price: 423.73 },
+  { label: "SFP BENGALI 220", value: "SFP BENGALI 220", channelCount: 70, price: 186.44 },
+  { label: "SFP BENGALI 220", value: "SFP BENGALI 220", channelCount: 60, price: 186.44 },
+  { label: "SFP BENGALI HINDI HD 500", value: "SFP BENGALI HINDI HD 500", channelCount: 143, price: 423.73 },
+  { label: "SITI FAMILY PACK ORIYA - 205", value: "SITI FAMILY PACK ORIYA - 205", channelCount: 76, price: 173.73 },
+  { label: "SITI FAMILY PACK ORIYA - 225", value: "SITI FAMILY PACK ORIYA - 225", channelCount: 79, price: 190.68 },
+  { label: "SITI-FAMILY HINDI 380", value: "SITI-FAMILY HINDI 380", channelCount: 103, price: 322.03 },
+  { label: "SITI-FAMILY HINDI 410", value: "SITI-FAMILY HINDI 410", channelCount: 143, price: 347.46 },
+  { label: "SFP ORIYA 360", value: "SFP ORIYA 360", channelCount: 110, price: 305.08 },
+  { label: "SFP ORIYA 270", value: "SFP ORIYA 270", channelCount: 87, price: 228.81 },
+  { label: "SFP ORIYA HD 500", value: "SFP ORIYA HD 500", channelCount: 141, price: 423.73 },
+  { label: "SITI-FAMILY HINDI 380", value: "SITI-FAMILY HINDI 380", channelCount: 113, price: 322.03 },
+  { label: "SITI-FAMILY HINDI 410", value: "SITI-FAMILY HINDI 410", channelCount: 118, price: 347.46 },
+  { label: "SFP ORIYA 360", value: "SFP ORIYA 360", channelCount: 118, price: 305.08 },
+  { label: "SITI-FAMILY HINDI 320", value: "SITI-FAMILY HINDI 320", channelCount: 89, price: 271.19 },
+  { label: "SFP BENGALI 220", value: "SFP BENGALI 220", channelCount: 70, price: 186.44 },
+  { label: "SITI-FAMILY HINDI 320", value: "SITI-FAMILY HINDI 320", channelCount: 83, price: 271.19 },
+  { label: "SITI FAMILY PACK HINDI HD - 300", value: "SITI FAMILY PACK HINDI HD - 300", channelCount: 64, price: 254.24 },
+  { label: "SFP BENGALI-240", value: "SFP BENGALI-240", channelCount: 76, price: 203.39 },
+  { label: "SITI-FAMILY HINDI HD 630", value: "SITI-FAMILY HINDI HD 630", channelCount: 127, price: 533.90 },
+  { label: "SFP BENGALI-240", value: "SFP BENGALI-240", channelCount: 66, price: 203.39 },
+  { label: "SITI-FAMILY HINDI HD 630A", value: "SITI-FAMILY HINDI HD 630A", channelCount: 116, price: 533.90 },
+  { label: "SITI-FAMILY HINDI HD 630", value: "SITI-FAMILY HINDI HD 630", channelCount: 117, price: 533.90 },
+  { label: "SFP ORIYA 270", value: "SFP ORIYA 270", channelCount: 95, price: 228.81 },
+  { label: "SFP ORIYA HD 500", value: "SFP ORIYA HD 500", channelCount: 149, price: 423.73 },
+  { label: "SITI FAMILY PACK HINDI HD - 300", value: "SITI FAMILY PACK HINDI HD - 300", channelCount: 75, price: 254.24 },
+];
 
 interface Recharge {
   id: number;
@@ -20,7 +71,16 @@ interface Recharge {
 
 export const RechargeTracker = () => {
   const { toast } = useToast();
-  const [recharges, setRecharges] = useState<Recharge[]>([
+  const [recharges, setRecharges] = useState<{
+    id: number,
+    customer: string,
+    service: string,
+    pack: string,
+    amount: number,
+    time: string,
+    date: string,
+    status: 'completed' | 'pending' | 'failed'
+  }[]>([
     { id: 1, customer: 'John Doe', service: 'TV', pack: 'Premium Sports', amount: 599, time: '09:30 AM', date: '2024-06-13', status: 'completed' },
     { id: 2, customer: 'Jane Smith', service: 'Internet', pack: '100 Mbps', amount: 899, time: '10:15 AM', date: '2024-06-13', status: 'completed' },
     { id: 3, customer: 'Mike Johnson', service: 'TV', pack: 'Basic Package', amount: 299, time: '11:00 AM', date: '2024-06-13', status: 'pending' }
@@ -30,14 +90,15 @@ export const RechargeTracker = () => {
     customer: '',
     service: '',
     company: '',
-    pack: ''
+    pack: '',
+    amount: 0
   });
 
   const [searchTerm, setSearchTerm] = useState('');
   const [serviceFilter, setServiceFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
 
-  // Company options by service (UPDATED)
+  // Cable TV: SITI & GTPL only. Broadband: Alliance & GTPL only.
   const tvCompanies = [
     { value: "SITI", label: "SITI" },
     { value: "GTPL", label: "GTPL" }
@@ -46,6 +107,11 @@ export const RechargeTracker = () => {
     { value: "Alliance", label: "Alliance" },
     { value: "GTPL", label: "GTPL" }
   ];
+
+  // Find selected SITI pack
+  const selectedSitiPack = newRecharge.company === 'SITI' && newRecharge.service === 'TV'
+    ? SITI_PACKS.find(p => p.value === newRecharge.pack)
+    : null;
 
   const filteredRecharges = recharges.filter(recharge => {
     const matchesSearch = recharge.customer.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -66,19 +132,28 @@ export const RechargeTracker = () => {
       return;
     }
 
+    // Amount logic: for SITI, amount comes from pack; else, default/0.
+    let amount = 0;
+    if (newRecharge.company === 'SITI' && newRecharge.service === 'TV') {
+      const packObj = SITI_PACKS.find(p => p.value === newRecharge.pack);
+      amount = packObj ? packObj.price : 0;
+    } else {
+      amount = Number(newRecharge.amount) || 0;
+    }
+
     const recharge: Recharge = {
       id: Date.now(),
       customer: newRecharge.customer,
       service: newRecharge.service,
       pack: newRecharge.pack || 'Standard',
-      amount: 0,
+      amount,
       time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
       date: new Date().toISOString().split('T')[0],
       status: 'completed'
     };
 
     setRecharges([recharge, ...recharges]);
-    setNewRecharge({ customer: '', service: '', company: '', pack: '' });
+    setNewRecharge({ customer: '', service: '', company: '', pack: '', amount: 0 });
     
     toast({
       title: "Recharge Added",
@@ -139,7 +214,10 @@ export const RechargeTracker = () => {
             value={newRecharge.customer}
             onChange={(e) => setNewRecharge({ ...newRecharge, customer: e.target.value })}
           />
-          <Select value={newRecharge.service} onValueChange={(value) => setNewRecharge({ ...newRecharge, service: value, company: '' })}>
+          <Select
+            value={newRecharge.service}
+            onValueChange={(value) => setNewRecharge({ ...newRecharge, service: value, company: '', pack: '', amount: 0 })}
+          >
             <SelectTrigger>
               <SelectValue placeholder="Service Type" />
             </SelectTrigger>
@@ -151,7 +229,7 @@ export const RechargeTracker = () => {
           {/* Company dropdown */}
           <Select
             value={newRecharge.company}
-            onValueChange={(value) => setNewRecharge({ ...newRecharge, company: value })}
+            onValueChange={(value) => setNewRecharge({ ...newRecharge, company: value, pack: '', amount: 0 })}
             disabled={!newRecharge.service}
           >
             <SelectTrigger>
@@ -166,15 +244,60 @@ export const RechargeTracker = () => {
                 internetCompanies.map(company => (
                   <SelectItem key={company.value} value={company.value}>{company.label}</SelectItem>
                 ))}
-              {/* Do NOT render any SelectItem at all if no newRecharge.service is selected */}
             </SelectContent>
           </Select>
-          <Input
-            placeholder="Pack/Plan Name"
-            type="text"
-            value={newRecharge.pack}
-            onChange={(e) => setNewRecharge({ ...newRecharge, pack: e.target.value })}
-          />
+          {/* Pack/Plan logic */}
+          {newRecharge.service === "TV" && newRecharge.company === "SITI" ? (
+            <Select
+              value={newRecharge.pack}
+              onValueChange={packValue => {
+                const packObj = SITI_PACKS.find(p => p.value === packValue);
+                setNewRecharge({
+                  ...newRecharge,
+                  pack: packValue,
+                  amount: packObj ? packObj.price : 0
+                });
+              }}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Pack/Plan Name" />
+              </SelectTrigger>
+              <SelectContent>
+                {SITI_PACKS.map((pack, idx) => (
+                  <SelectItem key={`${pack.value}-${pack.channelCount}-${idx}`} value={pack.value}>
+                    {`${pack.label} (${pack.channelCount} ch) - ₹${pack.price}`}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          ) : (
+            <Input
+              placeholder="Pack/Plan Name"
+              type="text"
+              value={newRecharge.pack}
+              onChange={(e) => setNewRecharge({ ...newRecharge, pack: e.target.value })}
+            />
+          )}
+          {/* Amount logic - only show for non-SITI or editable? */}
+          {(newRecharge.company !== 'SITI' || newRecharge.service !== 'TV') && (
+            <Input
+              placeholder="Amount"
+              type="number"
+              min={0}
+              value={newRecharge.amount}
+              onChange={e => setNewRecharge({ ...newRecharge, amount: +e.target.value })}
+            />
+          )}
+          {/* Show SITI pack price in read-only mode */}
+          {(newRecharge.company === 'SITI' && newRecharge.service === 'TV' && selectedSitiPack) && (
+            <Input
+              placeholder="Amount"
+              type="number"
+              value={selectedSitiPack.price}
+              readOnly
+              className="bg-gray-100"
+            />
+          )}
         </div>
         <Button onClick={handleAddRecharge} className="w-full">
           Add Recharge
