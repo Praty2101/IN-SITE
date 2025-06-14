@@ -8,66 +8,39 @@ import { useToast } from '@/hooks/use-toast';
 import { Trash2, Search, Filter, TrendingUp } from 'lucide-react';
 import { PackComboBox } from './PackComboBox';
 
-// SITI Cable TV packs (updated with new packs, de-duplicated for clarity)
+// SITI Cable TV packs (with both customerPrice and operatorPrice for relevant packs)
 const SITI_PACKS = [
-  { label: "SITI FAMILY PACK-250", value: "SITI FAMILY PACK-250", channelCount: 111, price: 211.86 },
-  { label: "SFP BENGALI HINDI 320", value: "SFP BENGALI HINDI 320", channelCount: 141, price: 271.19 },
-  { label: "SFP BENGALI HINDI 380", value: "SFP BENGALI HINDI 380", channelCount: 146, price: 322.03 },
-  { label: "SFP BENGALI HINDI 450", value: "SFP BENGALI HINDI 450", channelCount: 157, price: 381.36 },
-  { label: "SITI FAMILY PACK-490", value: "SITI FAMILY PACK-490", channelCount: 148, price: 415.25 },
-  { label: "SFP BENGALI HINDI HD 600", value: "SFP BENGALI HINDI HD 600", channelCount: 171, price: 508.48 },
-  { label: "SFP TELUGU-350", value: "SFP TELUGU-350", channelCount: 138, price: 296.61 },
-  { label: "SFP BENGALI HINDI HD 350", value: "SFP BENGALI HINDI HD 350", channelCount: 116, price: 296.61 },
-  { label: "SITI-FAMILY HD -410", value: "SITI-FAMILY HD -410", channelCount: 129, price: 347.46 },
-  { label: "SITI-FAMILY HD-410", value: "SITI-FAMILY HD-410", channelCount: 117, price: 347.46 },
-  { label: "SITI FAMILY PACK ORIYA - 225", value: "SITI FAMILY PACK ORIYA - 225", channelCount: 110, price: 190.68 },
-  { label: "SITI-FAMILY HINDI 475", value: "SITI-FAMILY HINDI 475", channelCount: 159, price: 402.54 },
-  { label: "SITI FAMILY PACK ORIYA - 205", value: "SITI FAMILY PACK ORIYA - 205", channelCount: 70, price: 173.73 },
-  { label: "SFP HINDI - 250", value: "SFP HINDI - 250", channelCount: 77, price: 211.86 },
-  { label: "SFP BENGALI HINDI HD 500", value: "SFP BENGALI HINDI HD 500", channelCount: 130, price: 423.73 },
-  { label: "SFP BENGALI 220", value: "SFP BENGALI 220", channelCount: 70, price: 186.44 },
-  { label: "SFP ORIYA 360", value: "SFP ORIYA 360", channelCount: 110, price: 305.08 },
-  { label: "SFP ORIYA 270", value: "SFP ORIYA 270", channelCount: 87, price: 228.81 },
-  { label: "SFP ORIYA HD 500", value: "SFP ORIYA HD 500", channelCount: 141, price: 423.73 },
-  { label: "SITI-FAMILY HINDI 380", value: "SITI-FAMILY HINDI 380", channelCount: 103, price: 322.03 },
-  { label: "SITI-FAMILY HINDI 410", value: "SITI-FAMILY HINDI 410", channelCount: 143, price: 347.46 },
-  { label: "SFP ORIYA 360", value: "SFP ORIYA 360", channelCount: 118, price: 305.08 },
-  { label: "SITI-FAMILY HINDI 320", value: "SITI-FAMILY HINDI 320", channelCount: 89, price: 271.19 },
-  { label: "SITI FAMILY PACK HINDI HD - 300", value: "SITI FAMILY PACK HINDI HD - 300", channelCount: 64, price: 254.24 },
-  { label: "SFP BENGALI-240", value: "SFP BENGALI-240", channelCount: 76, price: 203.39 },
-  { label: "SITI-FAMILY HINDI HD 630", value: "SITI-FAMILY HINDI HD 630", channelCount: 127, price: 533.90 },
-  { label: "SITI-FAMILY HINDI HD 630A", value: "SITI-FAMILY HINDI HD 630A", channelCount: 116, price: 533.90 },
-  { label: "SFP ORIYA 270", value: "SFP ORIYA 270", channelCount: 95, price: 228.81 },
-
-  // --- New packs from your message ---
-  { label: "SITI FAMILY PACK 190", value: "SITI FAMILY PACK 190", channelCount: 55, price: 161.02 },
-  { label: "SITI FAMILY PACK 190", value: "SITI FAMILY PACK 190", channelCount: 45, price: 161.02 },
-  { label: "SITI FAMILY HINDI 190", value: "SITI FAMILY HINDI 190", channelCount: 56, price: 161.02 },
-  { label: "SITI FAMILY HINDI 190", value: "SITI FAMILY HINDI 190", channelCount: 46, price: 161.02 },
-  { label: "SITI FAMILY SPORTS 330", value: "SITI FAMILY SPORTS 330", channelCount: 90, price: 279.66 },
-  { label: "SITI FAMILY SPORTS 330", value: "SITI FAMILY SPORTS 330", channelCount: 80, price: 279.66 },
-  { label: "SITI FAMILY SPORTS HINDI 325", value: "SITI FAMILY SPORTS HINDI 325", channelCount: 91, price: 275.42 },
-  { label: "SITI FAMILY SPORTS HINDI 325", value: "SITI FAMILY SPORTS HINDI 325", channelCount: 81, price: 275.42 },
-  { label: "SFP BENGALI HINDI 270", value: "SFP BENGALI HINDI 270", channelCount: 104, price: 228.81 },
-  { label: "SFP BENGALI HINDI 270", value: "SFP BENGALI HINDI 270", channelCount: 94, price: 228.81 },
-  { label: "SITI FAMILY PACK 360", value: "SITI FAMILY PACK 360", channelCount: 99, price: 305.08 },
-  { label: "SITI FAMILY PACK 360", value: "SITI FAMILY PACK 360", channelCount: 89, price: 305.08 },
-  { label: "SFP HINDI 270", value: "SFP HINDI 270", channelCount: 96, price: 228.81 },
-  { label: "SFP HINDI 270", value: "SFP HINDI 270", channelCount: 86, price: 228.81 },
-  { label: "SITI FAMILY PACK HINDI 350 NEW", value: "SITI FAMILY PACK HINDI 350 NEW", channelCount: 92, price: 296.61 },
-  { label: "SITI FAMILY PACK HINDI 350 NEW", value: "SITI FAMILY PACK HINDI 350 NEW", channelCount: 82, price: 296.61 },
-  { label: "SFP ORIYA 400", value: "SFP ORIYA 400", channelCount: 131, price: 338.98 },
-  { label: "SFP ORIYA 400", value: "SFP ORIYA 400", channelCount: 121, price: 338.98 },
-  { label: "SITI FAMILY PACK HD 650", value: "SITI FAMILY PACK HD 650", channelCount: 146, price: 550.85 },
-  { label: "SITI FAMILY PACK HD 650", value: "SITI FAMILY PACK HD 650", channelCount: 137, price: 550.85 },
-  { label: "SITI FAMILY PACK 550", value: "SITI FAMILY PACK 550", channelCount: 129, price: 466.10 },
-  { label: "SITI FAMILY PACK 550", value: "SITI FAMILY PACK 550", channelCount: 119, price: 466.10 },
-  { label: "SITI FAMILY PACK HINDI HD-500", value: "SITI FAMILY PACK HINDI HD-500", channelCount: 102, price: 423.73 },
-  { label: "SITI FAMILY PACK HINDI HD-500", value: "SITI FAMILY PACK HINDI HD-500", channelCount: 92, price: 423.73 },
-  { label: "SITI FAMILY ORIYA 190", value: "SITI FAMILY ORIYA 190", channelCount: 55, price: 161.02 },
-  { label: "SITI FAMILY ORIYA 190", value: "SITI FAMILY ORIYA 190", channelCount: 45, price: 161.02 },
-  { label: "SITI HD SPORTS 400", value: "SITI HD SPORTS 400", channelCount: 94, price: 338.98 },
-  { label: "SITI HD SPORTS 400", value: "SITI HD SPORTS 400", channelCount: 84, price: 338.98 },
+  // FORMAT: { label, value, channelCount, operatorPrice, customerPrice }
+  { label: "SITI FAMILY PACK 190", value: "SITI FAMILY PACK 190", channelCount: 55, operatorPrice: 161.02, customerPrice: 190 },
+  { label: "SITI FAMILY PACK 190", value: "SITI FAMILY PACK 190", channelCount: 45, operatorPrice: 161.02, customerPrice: 190 },
+  { label: "SITI FAMILY HINDI 190", value: "SITI FAMILY HINDI 190", channelCount: 56, operatorPrice: 161.02, customerPrice: 190 },
+  { label: "SITI FAMILY HINDI 190", value: "SITI FAMILY HINDI 190", channelCount: 46, operatorPrice: 161.02, customerPrice: 190 },
+  { label: "SITI FAMILY SPORTS 330", value: "SITI FAMILY SPORTS 330", channelCount: 90, operatorPrice: 279.66, customerPrice: 330 },
+  { label: "SITI FAMILY SPORTS 330", value: "SITI FAMILY SPORTS 330", channelCount: 80, operatorPrice: 279.66, customerPrice: 330 },
+  { label: "SITI FAMILY SPORTS HINDI 325", value: "SITI FAMILY SPORTS HINDI 325", channelCount: 91, operatorPrice: 275.42, customerPrice: 325 },
+  { label: "SITI FAMILY SPORTS HINDI 325", value: "SITI FAMILY SPORTS HINDI 325", channelCount: 81, operatorPrice: 275.42, customerPrice: 325 },
+  { label: "SFP BENGALI HINDI 270", value: "SFP BENGALI HINDI 270", channelCount: 104, operatorPrice: 228.81, customerPrice: 270 },
+  { label: "SFP BENGALI HINDI 270", value: "SFP BENGALI HINDI 270", channelCount: 94, operatorPrice: 228.81, customerPrice: 270 },
+  { label: "SITI FAMILY PACK 360", value: "SITI FAMILY PACK 360", channelCount: 99, operatorPrice: 305.08, customerPrice: 360 },
+  { label: "SITI FAMILY PACK 360", value: "SITI FAMILY PACK 360", channelCount: 89, operatorPrice: 305.08, customerPrice: 360 },
+  { label: "SFP HINDI 270", value: "SFP HINDI 270", channelCount: 96, operatorPrice: 228.81, customerPrice: 270 },
+  { label: "SFP HINDI 270", value: "SFP HINDI 270", channelCount: 86, operatorPrice: 228.81, customerPrice: 270 },
+  { label: "SITI FAMILY PACK HINDI 350 NEW", value: "SITI FAMILY PACK HINDI 350 NEW", channelCount: 92, operatorPrice: 296.61, customerPrice: 350 },
+  { label: "SITI FAMILY PACK HINDI 350 NEW", value: "SITI FAMILY PACK HINDI 350 NEW", channelCount: 82, operatorPrice: 296.61, customerPrice: 350 },
+  { label: "SFP ORIYA 400", value: "SFP ORIYA 400", channelCount: 131, operatorPrice: 338.98, customerPrice: 400 },
+  { label: "SFP ORIYA 400", value: "SFP ORIYA 400", channelCount: 121, operatorPrice: 338.98, customerPrice: 400 },
+  { label: "SITI FAMILY PACK HD 650", value: "SITI FAMILY PACK HD 650", channelCount: 146, operatorPrice: 550.85, customerPrice: 650 },
+  { label: "SITI FAMILY PACK HD 650", value: "SITI FAMILY PACK HD 650", channelCount: 137, operatorPrice: 550.85, customerPrice: 650 },
+  { label: "SITI FAMILY PACK 550", value: "SITI FAMILY PACK 550", channelCount: 129, operatorPrice: 466.10, customerPrice: 550 },
+  { label: "SITI FAMILY PACK 550", value: "SITI FAMILY PACK 550", channelCount: 119, operatorPrice: 466.10, customerPrice: 550 },
+  { label: "SITI-FAMILY HD -410", value: "SITI-FAMILY HD -410", channelCount: 129, operatorPrice: 347.46, customerPrice: 410 },
+  { label: "SITI-FAMILY HINDI HD 630", value: "SITI-FAMILY HINDI HD 630", channelCount: 127, operatorPrice: 533.90, customerPrice: 630 },
+  { label: "SITI FAMILY PACK HINDI HD-500", value: "SITI FAMILY PACK HINDI HD-500", channelCount: 102, operatorPrice: 423.73, customerPrice: 500 },
+  { label: "SITI FAMILY PACK HINDI HD-500", value: "SITI FAMILY PACK HINDI HD-500", channelCount: 92, operatorPrice: 423.73, customerPrice: 500 },
+  { label: "SITI FAMILY ORIYA 190", value: "SITI FAMILY ORIYA 190", channelCount: 55, operatorPrice: 161.02, customerPrice: 190 },
+  { label: "SITI FAMILY ORIYA 190", value: "SITI FAMILY ORIYA 190", channelCount: 45, operatorPrice: 161.02, customerPrice: 190 },
+  { label: "SITI HD SPORTS 400", value: "SITI HD SPORTS 400", channelCount: 94, operatorPrice: 338.98, customerPrice: 400 },
+  { label: "SITI HD SPORTS 400", value: "SITI HD SPORTS 400", channelCount: 84, operatorPrice: 338.98, customerPrice: 400 },
   { label: "BST JANTA", value: "BST JANTA", channelCount: 41, price: 0.00 },
 ];
 
@@ -121,9 +94,10 @@ export const RechargeTracker = () => {
     { value: "GTPL", label: "GTPL" }
   ];
 
-  // Find selected SITI pack
+  // Find selected SITI pack for price display
   const selectedSitiPack = newRecharge.company === 'SITI' && newRecharge.service === 'TV'
-    ? SITI_PACKS.find(p => p.value === newRecharge.pack)
+    ? SITI_PACKS.find(p => p.value === newRecharge.pack && (p.customerPrice !== undefined ? p.customerPrice : p.operatorPrice) === (+newRecharge.amount || p.operatorPrice))
+      || SITI_PACKS.find(p => p.value === newRecharge.pack)
     : null;
 
   const filteredRecharges = recharges.filter(recharge => {
@@ -269,14 +243,14 @@ export const RechargeTracker = () => {
                 setNewRecharge({
                   ...newRecharge,
                   pack: selectedValue,
-                  amount: packObj ? packObj.price : 0
+                  amount: packObj?.customerPrice ?? packObj?.operatorPrice ?? 0
                 });
               }}
-              onSelectPack={(packObj) => {
+              onSelectPack={packObj => {
                 setNewRecharge({
                   ...newRecharge,
                   pack: packObj.value,
-                  amount: packObj.price
+                  amount: packObj.customerPrice ?? packObj.operatorPrice ?? 0
                 });
               }}
               placeholder="Search or choose pack..."
@@ -301,13 +275,24 @@ export const RechargeTracker = () => {
           )}
           {/* Show SITI pack price in read-only mode */}
           {(newRecharge.company === 'SITI' && newRecharge.service === 'TV' && selectedSitiPack) && (
-            <Input
-              placeholder="Amount"
-              type="number"
-              value={selectedSitiPack.price}
-              readOnly
-              className="bg-gray-100"
-            />
+            <div className="flex gap-2">
+              <Input
+                placeholder="Customer Amount"
+                type="number"
+                value={selectedSitiPack.customerPrice ?? selectedSitiPack.operatorPrice}
+                readOnly
+                className="bg-gray-100"
+              />
+              {'customerPrice' in selectedSitiPack && selectedSitiPack.customerPrice !== undefined && (
+                <Input
+                  placeholder="Operator Deduction"
+                  type="number"
+                  value={selectedSitiPack.operatorPrice}
+                  readOnly
+                  className="bg-gray-100"
+                />
+              )}
+            </div>
           )}
         </div>
         <Button onClick={handleAddRecharge} className="w-full">

@@ -4,12 +4,14 @@ import { Input } from '@/components/ui/input';
 import { Command, CommandGroup, CommandItem, CommandList, CommandEmpty } from '@/components/ui/command';
 import { Badge } from '@/components/ui/badge';
 
-interface Pack {
+export interface Pack {
   label: string;
   value: string;
   channelCount: number;
-  price: number;
+  operatorPrice: number; // Deductible price for operator
+  customerPrice?: number; // Customer price, if different (optional for backwards compatibility)
 }
+
 interface PackComboBoxProps {
   packs: Pack[];
   value: string;
@@ -38,7 +40,8 @@ export const PackComboBox: React.FC<PackComboBoxProps> = ({
       pack =>
         pack.label.toLowerCase().includes(low) ||
         String(pack.channelCount).includes(low) ||
-        String(pack.price).includes(low)
+        String(pack.operatorPrice).includes(low) ||
+        (pack.customerPrice !== undefined && String(pack.customerPrice).includes(low))
     );
   }, [packs, search]);
 
@@ -63,7 +66,7 @@ export const PackComboBox: React.FC<PackComboBoxProps> = ({
               <CommandGroup>
                 {filtered.map((pack, idx) => (
                   <CommandItem
-                    key={`${pack.value}-${pack.channelCount}-${pack.price}-${idx}`}
+                    key={`${pack.value}-${pack.channelCount}-${pack.operatorPrice}-${idx}`}
                     onMouseDown={e => e.preventDefault()}
                     onClick={() => {
                       onChange(pack.value);
@@ -77,7 +80,16 @@ export const PackComboBox: React.FC<PackComboBoxProps> = ({
                         <span className="font-medium">{pack.label}</span>
                         <span className="text-xs ml-2 text-muted-foreground">{pack.channelCount} ch</span>
                       </span>
-                      <Badge variant="outline" className="ml-2">₹{pack.price}</Badge>
+                      <span className="flex flex-col items-end ml-2">
+                        {'customerPrice' in pack && pack.customerPrice !== undefined ? (
+                          <>
+                            <Badge variant="outline" className="mb-0.5 whitespace-nowrap">₹{pack.customerPrice} / ₹{pack.operatorPrice}</Badge>
+                            <span className="text-[10px] text-muted-foreground">Cust./Operator</span>
+                          </>
+                        ) : (
+                          <Badge variant="outline">₹{pack.operatorPrice}</Badge>
+                        )}
+                      </span>
                     </div>
                   </CommandItem>
                 ))}
@@ -89,4 +101,3 @@ export const PackComboBox: React.FC<PackComboBoxProps> = ({
     </div>
   );
 };
-
