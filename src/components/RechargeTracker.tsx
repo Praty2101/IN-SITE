@@ -170,11 +170,7 @@ export const RechargeTracker = () => {
                 internetCompanies.map(company => (
                   <SelectItem key={company.value} value={company.value}>{company.label}</SelectItem>
                 ))}
-              {!newRecharge.service && (
-                <SelectItem value="" disabled>
-                  Select service first
-                </SelectItem>
-              )}
+              {/* Do NOT render any SelectItem at all if no newRecharge.service is selected */}
             </SelectContent>
           </Select>
           <Input
