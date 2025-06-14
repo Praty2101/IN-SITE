@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -82,6 +81,35 @@ export const UserManagement = () => {
       totalPaid: 9588,
       connectionDate: '2023-02-18',
       planDetails: '150 Mbps Business'
+    },
+    // DEMO GTPL & SITI customers
+    { 
+      id: 6, 
+      name: 'Girish Mehta', 
+      address: '888 K Block, City X', 
+      ispId: 'ISP1006', 
+      service: 'GTPL', 
+      amount: 540, 
+      status: 'Active',
+      lastPayment: '2024-06-12',
+      nextDue: '2024-07-12',
+      totalPaid: 6480,
+      connectionDate: '2023-04-05',
+      planDetails: 'Family Pack'
+    },
+    { 
+      id: 7, 
+      name: 'Shweta Rao', 
+      address: '555 Market Rd, City Y', 
+      ispId: 'ISP1007', 
+      service: 'SITI', 
+      amount: 450, 
+      status: 'Active',
+      lastPayment: '2024-06-10',
+      nextDue: '2024-07-10',
+      totalPaid: 5400,
+      connectionDate: '2023-07-12',
+      planDetails: 'Standard HD'
     }
   ];
 
@@ -167,6 +195,8 @@ export const UserManagement = () => {
               <SelectItem value="TV">TV Only</SelectItem>
               <SelectItem value="Internet">Internet Only</SelectItem>
               <SelectItem value="TV + Internet">TV + Internet</SelectItem>
+              <SelectItem value="GTPL">GTPL</SelectItem>
+              <SelectItem value="SITI">SITI</SelectItem>
             </SelectContent>
           </Select>
         </div>

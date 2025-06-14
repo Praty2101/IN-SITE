@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -24,7 +23,10 @@ export const RechargeTracker = () => {
   const [recharges, setRecharges] = useState<Recharge[]>([
     { id: 1, customer: 'John Doe', service: 'TV', pack: 'Premium Sports', amount: 599, time: '09:30 AM', date: '2024-06-13', status: 'completed' },
     { id: 2, customer: 'Jane Smith', service: 'Internet', pack: '100 Mbps', amount: 899, time: '10:15 AM', date: '2024-06-13', status: 'completed' },
-    { id: 3, customer: 'Mike Johnson', service: 'TV', pack: 'Basic Package', amount: 299, time: '11:00 AM', date: '2024-06-13', status: 'pending' }
+    { id: 3, customer: 'Mike Johnson', service: 'TV', pack: 'Basic Package', amount: 299, time: '11:00 AM', date: '2024-06-13', status: 'pending' },
+    // DEMO GTPL & SITI entries
+    { id: 4, customer: 'Amit Patel', service: 'GTPL', pack: 'Family Pack', amount: 540, time: '12:00 PM', date: '2024-06-13', status: 'completed' },
+    { id: 5, customer: 'Priya Sahu', service: 'SITI', pack: 'Standard HD', amount: 450, time: '12:30 PM', date: '2024-06-13', status: 'completed' },
   ]);
 
   const [newRecharge, setNewRecharge] = useState({
@@ -137,6 +139,8 @@ export const RechargeTracker = () => {
             <SelectContent>
               <SelectItem value="TV">Cable TV</SelectItem>
               <SelectItem value="Internet">Broadband</SelectItem>
+              <SelectItem value="GTPL">GTPL</SelectItem>
+              <SelectItem value="SITI">SITI</SelectItem>
             </SelectContent>
           </Select>
           <Input
@@ -174,6 +178,8 @@ export const RechargeTracker = () => {
               <SelectItem value="all">All Services</SelectItem>
               <SelectItem value="TV">TV</SelectItem>
               <SelectItem value="Internet">Internet</SelectItem>
+              <SelectItem value="GTPL">GTPL</SelectItem>
+              <SelectItem value="SITI">SITI</SelectItem>
             </SelectContent>
           </Select>
           <Select value={statusFilter} onValueChange={setStatusFilter}>
