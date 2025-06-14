@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { Trash2, Search, Filter, TrendingUp } from 'lucide-react';
+import { PackComboBox } from './PackComboBox';
 
 // SITI Cable TV packs (updated with new packs, de-duplicated for clarity)
 const SITI_PACKS = [
@@ -260,28 +261,26 @@ export const RechargeTracker = () => {
           </Select>
           {/* Pack/Plan logic */}
           {newRecharge.service === "TV" && newRecharge.company === "SITI" ? (
-            <Select
+            <PackComboBox
+              packs={SITI_PACKS}
               value={newRecharge.pack}
-              onValueChange={packValue => {
-                const packObj = SITI_PACKS.find(p => p.value === packValue);
+              onChange={(selectedValue) => {
+                const packObj = SITI_PACKS.find(p => p.value === selectedValue);
                 setNewRecharge({
                   ...newRecharge,
-                  pack: packValue,
+                  pack: selectedValue,
                   amount: packObj ? packObj.price : 0
                 });
               }}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Pack/Plan Name" />
-              </SelectTrigger>
-              <SelectContent>
-                {SITI_PACKS.map((pack, idx) => (
-                  <SelectItem key={`${pack.value}-${pack.channelCount}-${idx}`} value={pack.value}>
-                    {`${pack.label} (${pack.channelCount} ch) - ₹${pack.price}`}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+              onSelectPack={(packObj) => {
+                setNewRecharge({
+                  ...newRecharge,
+                  pack: packObj.value,
+                  amount: packObj.price
+                });
+              }}
+              placeholder="Search or choose pack..."
+            />
           ) : (
             <Input
               placeholder="Pack/Plan Name"
