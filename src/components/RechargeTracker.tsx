@@ -29,8 +29,8 @@ export const RechargeTracker = () => {
   const [newRecharge, setNewRecharge] = useState({
     customer: '',
     service: '',
-    pack: '',
-    amount: ''
+    company: '',
+    pack: ''
   });
 
   const [searchTerm, setSearchTerm] = useState('');
@@ -47,7 +47,7 @@ export const RechargeTracker = () => {
   });
 
   const handleAddRecharge = () => {
-    if (!newRecharge.customer || !newRecharge.service || !newRecharge.amount) {
+    if (!newRecharge.customer || !newRecharge.service || !newRecharge.company) {
       toast({
         title: "Missing Information",
         description: "Please fill in all required fields",
@@ -61,14 +61,14 @@ export const RechargeTracker = () => {
       customer: newRecharge.customer,
       service: newRecharge.service,
       pack: newRecharge.pack || 'Standard',
-      amount: parseInt(newRecharge.amount),
+      amount: 0,
       time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
       date: new Date().toISOString().split('T')[0],
       status: 'completed'
     };
 
     setRecharges([recharge, ...recharges]);
-    setNewRecharge({ customer: '', service: '', pack: '', amount: '' });
+    setNewRecharge({ customer: '', service: '', company: '', pack: '' });
     
     toast({
       title: "Recharge Added",
@@ -139,15 +139,15 @@ export const RechargeTracker = () => {
             </SelectContent>
           </Select>
           <Input
-            placeholder="Pack/Plan Name"
-            value={newRecharge.pack}
-            onChange={(e) => setNewRecharge({ ...newRecharge, pack: e.target.value })}
+            placeholder="Company"
+            value={newRecharge.company}
+            onChange={(e) => setNewRecharge({ ...newRecharge, company: e.target.value })}
           />
           <Input
-            placeholder="Amount (₹)"
-            type="number"
-            value={newRecharge.amount}
-            onChange={(e) => setNewRecharge({ ...newRecharge, amount: e.target.value })}
+            placeholder="Pack/Plan Name"
+            type="text"
+            value={newRecharge.pack}
+            onChange={(e) => setNewRecharge({ ...newRecharge, pack: e.target.value })}
           />
         </div>
         <Button onClick={handleAddRecharge} className="w-full">
