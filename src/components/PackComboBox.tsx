@@ -3,6 +3,7 @@ import React, { useState, useMemo } from 'react';
 import { Input } from '@/components/ui/input';
 import { Command, CommandGroup, CommandItem, CommandList, CommandEmpty } from '@/components/ui/command';
 import { Badge } from '@/components/ui/badge';
+import { Check } from 'lucide-react';
 
 export interface Pack {
   label: string;
@@ -51,6 +52,7 @@ export const PackComboBox: React.FC<PackComboBoxProps> = ({
         placeholder={placeholder}
         onFocus={() => setOpen(true)}
         onBlur={() => setTimeout(() => setOpen(false), 120)}
+        // Show selected label if nothing is being searched
         value={search || (selectedPack ? selectedPack.label : value)}
         onChange={e => {
           setSearch(e.target.value);
@@ -64,7 +66,9 @@ export const PackComboBox: React.FC<PackComboBoxProps> = ({
             <CommandList>
               <CommandEmpty>No pack found.</CommandEmpty>
               <CommandGroup>
-                {filtered.map((pack, idx) => (
+                {filtered.map((pack, idx) => {
+                  const isActive = pack.value === value;
+                  return (
                   <CommandItem
                     key={`${pack.value}-${pack.channelCount}-${pack.operatorPrice}-${idx}`}
                     onMouseDown={e => e.preventDefault()}
@@ -74,25 +78,34 @@ export const PackComboBox: React.FC<PackComboBoxProps> = ({
                       setOpen(false);
                       if (onSelectPack) onSelectPack(pack);
                     }}
+                    className={`flex items-center justify-between w-full ${
+                      isActive
+                        ? 'bg-accent/50 dark:bg-accent/60 font-semibold ring-1 ring-accent'
+                        : ''
+                    }`}
                   >
-                    <div className="flex items-center justify-between w-full">
+                    <div className="flex items-center gap-2 w-full">
+                      {/* Checkmark for selected */}
+                      {isActive && (
+                        <Check className="h-4 w-4 text-green-600 mr-1 flex-shrink-0" />
+                      )}
                       <span>
                         <span className="font-medium">{pack.label}</span>
                         <span className="text-xs ml-2 text-muted-foreground">{pack.channelCount} ch</span>
                       </span>
-                      <span className="flex flex-col items-end ml-2">
-                        {'customerPrice' in pack && pack.customerPrice !== undefined ? (
-                          <>
-                            <Badge variant="outline" className="mb-0.5 whitespace-nowrap">₹{pack.customerPrice} / ₹{pack.operatorPrice}</Badge>
-                            <span className="text-[10px] text-muted-foreground">Cust./Operator</span>
-                          </>
-                        ) : (
-                          <Badge variant="outline">₹{pack.operatorPrice}</Badge>
-                        )}
-                      </span>
                     </div>
+                    <span className="flex flex-col items-end ml-2">
+                      {'customerPrice' in pack && pack.customerPrice !== undefined ? (
+                        <>
+                          <Badge variant="outline" className="mb-0.5 whitespace-nowrap">₹{pack.customerPrice} / ₹{pack.operatorPrice}</Badge>
+                          <span className="text-[10px] text-muted-foreground">Cust./Operator</span>
+                        </>
+                      ) : (
+                        <Badge variant="outline">₹{pack.operatorPrice}</Badge>
+                      )}
+                    </span>
                   </CommandItem>
-                ))}
+                )})}
               </CommandGroup>
             </CommandList>
           </Command>
@@ -101,3 +114,4 @@ export const PackComboBox: React.FC<PackComboBoxProps> = ({
     </div>
   );
 };
+
