@@ -1,8 +1,5 @@
-
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, LineChart, Line, PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import { TrendingUp, Users, Wifi, Tv, DollarSign, Calendar, RefreshCw, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -22,21 +19,6 @@ export const AnalyticsDashboard = () => {
     { day: 'Fri', tv: 1890, internet: 4800, total: 6690 },
     { day: 'Sat', tv: 2390, internet: 3800, total: 6190 },
     { day: 'Sun', tv: 3490, internet: 4300, total: 7790 }
-  ]);
-
-  const [serviceDistribution, setServiceDistribution] = useState([
-    { name: 'TV Only', value: 45, color: '#3b82f6' },
-    { name: 'Internet Only', value: 30, color: '#10b981' },
-    { name: 'TV + Internet', value: 25, color: '#f59e0b' }
-  ]);
-
-  const [planPopularity, setPlanPopularity] = useState([
-    { plan: 'Basic TV', count: 25, revenue: 7475 },
-    { plan: 'Premium TV', count: 18, revenue: 10782 },
-    { plan: 'Sports Pack', count: 12, revenue: 7188 },
-    { plan: '50 Mbps', count: 20, revenue: 15980 },
-    { plan: '100 Mbps', count: 15, revenue: 13485 },
-    { plan: '200 Mbps', count: 8, revenue: 8792 }
   ]);
 
   const [metrics, setMetrics] = useState({
@@ -84,8 +66,6 @@ export const AnalyticsDashboard = () => {
   const exportData = () => {
     const data = {
       revenue: revenueData,
-      services: serviceDistribution,
-      plans: planPopularity,
       metrics: metrics,
       exportedAt: new Date().toISOString()
     };
@@ -136,12 +116,6 @@ export const AnalyticsDashboard = () => {
 
     return () => clearInterval(interval);
   }, []);
-
-  const chartConfig = {
-    tv: { label: "TV", color: "#3b82f6" },
-    internet: { label: "Internet", color: "#10b981" },
-    total: { label: "Total", color: "#f59e0b" }
-  };
 
   const totalRevenue = revenueData.reduce((sum, day) => sum + day.total, 0);
   const avgDailyRevenue = Math.round(totalRevenue / revenueData.length);
@@ -231,80 +205,7 @@ export const AnalyticsDashboard = () => {
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-        {/* Revenue Trends */}
-        <Card className="lg:col-span-2">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5" />
-              Revenue Analysis ({timeRange === '7d' ? 'Daily' : 'Weekly'})
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ChartContainer config={chartConfig} className="h-[300px]">
-              <LineChart data={revenueData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="day" />
-                <YAxis />
-                <ChartTooltip content={<ChartTooltipContent />} />
-                <Line type="monotone" dataKey="tv" stroke="var(--color-tv)" strokeWidth={2} />
-                <Line type="monotone" dataKey="internet" stroke="var(--color-internet)" strokeWidth={2} />
-                <Line type="monotone" dataKey="total" stroke="var(--color-total)" strokeWidth={2} />
-              </LineChart>
-            </ChartContainer>
-          </CardContent>
-        </Card>
-
-        {/* Service Distribution */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Users className="h-5 w-5" />
-              Service Distribution
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ChartContainer config={chartConfig} className="h-[300px]">
-              <PieChart>
-                <Pie
-                  data={serviceDistribution}
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={80}
-                  dataKey="value"
-                  label={({ name, value }) => `${name}: ${value}%`}
-                >
-                  {serviceDistribution.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Pie>
-                <ChartTooltip />
-              </PieChart>
-            </ChartContainer>
-          </CardContent>
-        </Card>
-
-        {/* Plan Popularity */}
-        <Card className="lg:col-span-2">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Tv className="h-5 w-5" />
-              Most Popular Plans
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ChartContainer config={chartConfig} className="h-[300px]">
-              <BarChart data={planPopularity}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="plan" />
-                <YAxis />
-                <ChartTooltip content={<ChartTooltipContent />} />
-                <Bar dataKey="count" fill="#3b82f6" />
-              </BarChart>
-            </ChartContainer>
-          </CardContent>
-        </Card>
-
+      <div className="grid grid-cols-1 gap-6">
         {/* Performance Metrics */}
         <Card>
           <CardHeader>
