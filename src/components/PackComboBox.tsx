@@ -4,22 +4,24 @@ import { Input } from '@/components/ui/input';
 import { Command, CommandGroup, CommandItem, CommandList, CommandEmpty } from '@/components/ui/command';
 import { Badge } from '@/components/ui/badge';
 import { Check } from 'lucide-react';
+import type { SitiPack } from '@/hooks/useSitiPacks';
 
 export interface Pack {
   label: string;
   value: string;
   channelCount: number;
-  operatorPrice: number; // Deductible price for operator
-  customerPrice?: number; // Customer price, if different (optional for backwards compatibility)
+  operatorPrice: number;
+  customerPrice?: number;
 }
 
 interface PackComboBoxProps {
-  packs: Pack[];
+  packs: SitiPack[];
   value: string;
   onChange: (value: string) => void;
-  onSelectPack?: (pack: Pack) => void;
+  onSelectPack?: (pack: SitiPack) => void;
   placeholder?: string;
 }
+
 export const PackComboBox: React.FC<PackComboBoxProps> = ({
   packs,
   value,
@@ -31,18 +33,18 @@ export const PackComboBox: React.FC<PackComboBoxProps> = ({
   const [search, setSearch] = useState('');
 
   // Find selected pack for display
-  const selectedPack = packs.find(p => p.value === value);
+  const selectedPack = packs.find(p => p.pack_name === value);
 
-  // Fuzzy search (searches label, price, and channelCount)
+  // Convert database packs to display format and filter
   const filtered = useMemo(() => {
     if (!search) return packs;
     const low = search.toLowerCase();
     return packs.filter(
       pack =>
-        pack.label.toLowerCase().includes(low) ||
-        String(pack.channelCount).includes(low) ||
-        String(pack.operatorPrice).includes(low) ||
-        (pack.customerPrice !== undefined && String(pack.customerPrice).includes(low))
+        (pack.pack_name?.toLowerCase().includes(low)) ||
+        String(pack.channel_count || 0).includes(low) ||
+        String(pack.deductible_amount || 0).includes(low) ||
+        String(pack.actual_price || 0).includes(low)
     );
   }, [packs, search]);
 
@@ -52,11 +54,10 @@ export const PackComboBox: React.FC<PackComboBoxProps> = ({
         placeholder={placeholder}
         onFocus={() => setOpen(true)}
         onBlur={() => setTimeout(() => setOpen(false), 120)}
-        // Show selected label if nothing is being searched
-        value={search || (selectedPack ? selectedPack.label : value)}
+        value={search || (selectedPack ? selectedPack.pack_name || '' : value)}
         onChange={e => {
           setSearch(e.target.value);
-          onChange(''); // clear selection on typing
+          onChange('');
         }}
         className="cursor-text"
       />
@@ -67,13 +68,13 @@ export const PackComboBox: React.FC<PackComboBoxProps> = ({
               <CommandEmpty>No pack found.</CommandEmpty>
               <CommandGroup>
                 {filtered.map((pack, idx) => {
-                  const isActive = pack.value === value;
+                  const isActive = pack.pack_name === value;
                   return (
                   <CommandItem
-                    key={`${pack.value}-${pack.channelCount}-${pack.operatorPrice}-${idx}`}
+                    key={`${pack.pack_id}-${idx}`}
                     onMouseDown={e => e.preventDefault()}
                     onClick={() => {
-                      onChange(pack.value);
+                      onChange(pack.pack_name || '');
                       setSearch('');
                       setOpen(false);
                       if (onSelectPack) onSelectPack(pack);
@@ -85,23 +86,22 @@ export const PackComboBox: React.FC<PackComboBoxProps> = ({
                     }`}
                   >
                     <div className="flex items-center gap-2 w-full">
-                      {/* Checkmark for selected */}
                       {isActive && (
                         <Check className="h-4 w-4 text-green-600 mr-1 flex-shrink-0" />
                       )}
                       <span>
-                        <span className="font-medium">{pack.label}</span>
-                        <span className="text-xs ml-2 text-muted-foreground">{pack.channelCount} ch</span>
+                        <span className="font-medium">{pack.pack_name}</span>
+                        <span className="text-xs ml-2 text-muted-foreground">{pack.channel_count || 0} ch</span>
                       </span>
                     </div>
                     <span className="flex flex-col items-end ml-2">
-                      {'customerPrice' in pack && pack.customerPrice !== undefined ? (
+                      {pack.actual_price && pack.deductible_amount ? (
                         <>
-                          <Badge variant="outline" className="mb-0.5 whitespace-nowrap">₹{pack.customerPrice} / ₹{pack.operatorPrice}</Badge>
+                          <Badge variant="outline" className="mb-0.5 whitespace-nowrap">₹{pack.actual_price} / ₹{pack.deductible_amount}</Badge>
                           <span className="text-[10px] text-muted-foreground">Cust./Operator</span>
                         </>
                       ) : (
-                        <Badge variant="outline">₹{pack.operatorPrice}</Badge>
+                        <Badge variant="outline">₹{pack.actual_price || pack.deductible_amount || 0}</Badge>
                       )}
                     </span>
                   </CommandItem>
@@ -114,4 +114,3 @@ export const PackComboBox: React.FC<PackComboBoxProps> = ({
     </div>
   );
 };
-
