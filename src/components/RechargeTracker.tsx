@@ -305,6 +305,7 @@ export const RechargeTracker = () => {
           
           
           
+          {/* Show SITI pack price in read-only mode */}
           {(newRecharge.company === 'SITI' && newRecharge.service === 'TV' && selectedSitiPack) && (
   <div className="flex gap-2">
     {/* Editable Customer Amount */}
@@ -327,7 +328,10 @@ export const RechargeTracker = () => {
       />
     )}
   </div>
-)}
+        </div>
+        <Button onClick={handleAddRecharge} className="w-full">
+          Add Recharge
+        </Button>
 
         {/* Filters */}
         <div className="flex flex-col sm:flex-row gap-2">
