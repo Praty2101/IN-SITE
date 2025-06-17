@@ -305,31 +305,29 @@ export const RechargeTracker = () => {
           
           
           
-          {/* Show SITI pack price in read-only mode */}
           {(newRecharge.company === 'SITI' && newRecharge.service === 'TV' && selectedSitiPack) && (
-            <div className="flex gap-2">
-              <Input
-                placeholder="Customer Amount"
-                type="number"
-                value={selectedSitiPack.customerPrice ?? selectedSitiPack.operatorPrice}
-                readOnly
-                className="bg-gray-100"
-              />
-              {selectedSitiPack.customerPrice !== undefined && (
-                <Input
-                  placeholder="Operator Deduction"
-                  type="number"
-                  value={selectedSitiPack.operatorPrice}
-                  readOnly
-                  className="bg-gray-100"
-                />
-              )}
-            </div>
-          )}
-        </div>
-        <Button onClick={handleAddRecharge} className="w-full">
-          Add Recharge
-        </Button>
+  <div className="flex gap-2">
+    {/* Editable Customer Amount */}
+    <Input
+      placeholder="Customer Amount"
+      type="number"
+      value={newRecharge.customerAmount ?? selectedSitiPack.customerPrice ?? selectedSitiPack.operatorPrice}
+      onChange={(e) => setNewRecharge({ ...newRecharge, customerAmount: Number(e.target.value) })}
+      className="bg-white"
+    />
+
+    {/* Editable Operator Deduction if customerPrice is defined */}
+    {selectedSitiPack.customerPrice !== undefined && (
+      <Input
+        placeholder="Operator Deduction"
+        type="number"
+        value={newRecharge.operatorAmount ?? selectedSitiPack.operatorPrice}
+        onChange={(e) => setNewRecharge({ ...newRecharge, operatorAmount: Number(e.target.value) })}
+        className="bg-white"
+      />
+    )}
+  </div>
+)}
 
         {/* Filters */}
         <div className="flex flex-col sm:flex-row gap-2">
