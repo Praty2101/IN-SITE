@@ -14,9 +14,8 @@ export interface Pack {
 
 interface PackComboBoxProps {
   packs: Pack[];
-  value: string;
-  onChange: (value: string) => void;
-  onSelectPack?: (pack: Pack) => void;
+  value: Pack | null;  // Selected pack
+  onChange: (pack: Pack) => void;  // Triggered on selection
   placeholder?: string;
 }
 export const PackComboBox: React.FC<PackComboBoxProps> = ({
