@@ -1,4 +1,3 @@
-
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -28,5 +27,7 @@ export const useSitiPacks = () => {
       console.log('Fetched SITI packs:', data);
       return data as SitiPack[];
     },
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    cacheTime: 10 * 60 * 1000, // 10 minutes
   });
 };

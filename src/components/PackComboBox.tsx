@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo } from 'react';
 import { Input } from '@/components/ui/input';
 import { Command, CommandGroup, CommandItem, CommandList, CommandEmpty } from '@/components/ui/command';
@@ -62,7 +61,7 @@ export const PackComboBox: React.FC<PackComboBoxProps> = ({
         className="cursor-text"
       />
       {open && (
-        <div className="absolute z-50 bg-white dark:bg-background border border-border mt-1 w-full rounded shadow-lg animate-in fade-in-0">
+        <div className="absolute z-50 bg-white dark:bg-background border border-border mt-1 w-full rounded shadow-lg animate-in fade-in-0 max-h-80 overflow-y-auto">
           <Command>
             <CommandList>
               <CommandEmpty>No pack found.</CommandEmpty>
@@ -79,7 +78,7 @@ export const PackComboBox: React.FC<PackComboBoxProps> = ({
                       setOpen(false);
                       if (onSelectPack) onSelectPack(pack);
                     }}
-                    className={`flex items-center justify-between w-full ${
+                    className={`flex items-center justify-between w-full p-3 ${
                       isActive
                         ? 'bg-accent/50 dark:bg-accent/60 font-semibold ring-1 ring-accent'
                         : ''
@@ -89,21 +88,29 @@ export const PackComboBox: React.FC<PackComboBoxProps> = ({
                       {isActive && (
                         <Check className="h-4 w-4 text-green-600 mr-1 flex-shrink-0" />
                       )}
-                      <span>
-                        <span className="font-medium">{pack.pack_name}</span>
-                        <span className="text-xs ml-2 text-muted-foreground">{pack.channel_count || 0} ch</span>
-                      </span>
+                      <div className="flex-1">
+                        <div className="font-medium text-sm">{pack.pack_name}</div>
+                        <div className="text-xs text-muted-foreground">
+                          {pack.channel_count || 0} channels • ID: {pack.pack_id}
+                        </div>
+                      </div>
                     </div>
-                    <span className="flex flex-col items-end ml-2">
+                    <div className="flex flex-col items-end ml-2">
                       {pack.actual_price && pack.deductible_amount ? (
                         <>
-                          <Badge variant="outline" className="mb-0.5 whitespace-nowrap">₹{pack.actual_price} / ₹{pack.deductible_amount}</Badge>
+                          <Badge variant="outline" className="mb-0.5 whitespace-nowrap text-xs">
+                            ₹{pack.actual_price} / ₹{pack.deductible_amount}
+                          </Badge>
                           <span className="text-[10px] text-muted-foreground">Cust./Operator</span>
                         </>
+                      ) : pack.actual_price ? (
+                        <Badge variant="outline" className="text-xs">₹{pack.actual_price}</Badge>
+                      ) : pack.deductible_amount ? (
+                        <Badge variant="outline" className="text-xs">₹{pack.deductible_amount}</Badge>
                       ) : (
-                        <Badge variant="outline">₹{pack.actual_price || pack.deductible_amount || 0}</Badge>
+                        <Badge variant="secondary" className="text-xs">Contact for Price</Badge>
                       )}
-                    </span>
+                    </div>
                   </CommandItem>
                 )})}
               </CommandGroup>

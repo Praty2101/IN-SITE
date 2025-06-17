@@ -97,7 +97,7 @@ export const RechargeForm: React.FC<RechargeFormProps> = ({ onAddRecharge }) => 
         {newRecharge.service === "TV" && newRecharge.company === "SITI" ? (
           <div>
             {packsLoading ? (
-              <Input placeholder="Loading packs..." disabled />
+              <Input placeholder="Loading SITI packs..." disabled />
             ) : (
               <PackComboBox
                 packs={sitiPacks}
@@ -117,7 +117,7 @@ export const RechargeForm: React.FC<RechargeFormProps> = ({ onAddRecharge }) => 
                     amount: packObj.actual_price ?? packObj.deductible_amount ?? 0
                   });
                 }}
-                placeholder="Search or choose pack..."
+                placeholder="Search SITI packs..."
               />
             )}
           </div>
@@ -141,23 +141,30 @@ export const RechargeForm: React.FC<RechargeFormProps> = ({ onAddRecharge }) => 
         )}
         
         {(newRecharge.company === 'SITI' && newRecharge.service === 'TV' && selectedSitiPack) && (
-          <div className="flex gap-2">
-            <Input
-              placeholder="Customer Amount"
-              type="number"
-              value={selectedSitiPack.actual_price ?? selectedSitiPack.deductible_amount ?? 0}
-              readOnly
-              className="bg-gray-100"
-            />
-            {selectedSitiPack.actual_price && selectedSitiPack.deductible_amount && (
+          <div className="col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <div className="space-y-1">
+              <label className="text-xs text-muted-foreground">Customer Amount</label>
               <Input
-                placeholder="Operator Deduction"
                 type="number"
-                value={selectedSitiPack.deductible_amount}
+                value={selectedSitiPack.actual_price ?? selectedSitiPack.deductible_amount ?? 0}
                 readOnly
                 className="bg-gray-100"
               />
+            </div>
+            {selectedSitiPack.actual_price && selectedSitiPack.deductible_amount && (
+              <div className="space-y-1">
+                <label className="text-xs text-muted-foreground">Operator Deduction</label>
+                <Input
+                  type="number"
+                  value={selectedSitiPack.deductible_amount}
+                  readOnly
+                  className="bg-gray-100"
+                />
+              </div>
             )}
+            <div className="col-span-2 text-xs text-muted-foreground">
+              Pack ID: {selectedSitiPack.pack_id} • Channels: {selectedSitiPack.channel_count || 0}
+            </div>
           </div>
         )}
       </div>
