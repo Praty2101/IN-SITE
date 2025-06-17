@@ -328,6 +328,7 @@ export const RechargeTracker = () => {
       />
     )}
   </div>
+)}
         </div>
         <Button onClick={handleAddRecharge} className="w-full">
           Add Recharge
