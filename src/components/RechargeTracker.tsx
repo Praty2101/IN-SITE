@@ -303,16 +303,7 @@ export const RechargeTracker = () => {
             />
           )}
           
-          {/* Amount logic - only show for non-SITI or editable? */}
-          {(newRecharge.company !== 'SITI' || newRecharge.service !== 'TV') && (
-            <Input
-              placeholder="Amount"
-              type="number"
-              min={0}
-              value={newRecharge.amount}
-              onChange={e => setNewRecharge({ ...newRecharge, amount: +e.target.value })}
-            />
-          )}
+          
           
           {/* Show SITI pack price in read-only mode */}
           {(newRecharge.company === 'SITI' && newRecharge.service === 'TV' && selectedSitiPack) && (
