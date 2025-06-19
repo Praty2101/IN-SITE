@@ -78,7 +78,7 @@ export const RechargeTracker = () => {
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle>Daily Recharge Tracking</CardTitle>
+            <CardTitle className="text-center">Daily Recharge Tracking</CardTitle>
             <div className="grid grid-cols-3 gap-4 mt-2">
               <div className="text-center">
                 <div className="text-sm text-muted-foreground">Total (Customer)</div>
