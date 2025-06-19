@@ -1,6 +1,6 @@
-
 import React from 'react';
 import { Calendar, Database } from 'lucide-react';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 export const DashboardHeader = () => {
   const currentDate = new Date().toLocaleDateString('en-US', { 
@@ -21,9 +21,12 @@ export const DashboardHeader = () => {
               {currentDate}
             </p>
           </div>
-          <div className="flex items-center gap-2 text-muted-foreground">
-            <Database className="h-5 w-5" />
-            <span className="text-sm font-medium">System Online</span>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <Database className="h-5 w-5" />
+              <span className="text-sm font-medium">System Online</span>
+            </div>
+            <ThemeToggle />
           </div>
         </div>
       </div>
