@@ -1,96 +1,11 @@
 
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { Trash2, Search, Filter, TrendingUp } from 'lucide-react';
-import { PackComboBox, Pack } from './PackComboBox';
-
-// Complete SITI Cable TV packs from your database (all 79 packs)
-const SITI_PACKS = [
-  { label: "SITI FAMILY PACK-250", value: "SITI FAMILY PACK-250", channelCount: 111, operatorPrice: 211.86, customerPrice: 250.00 },
-  { label: "SFP BENGALI HINDI 320", value: "SFP BENGALI HINDI 320", channelCount: 141, operatorPrice: 271.19, customerPrice: 320.00 },
-  { label: "SFP BENGALI HINDI 380", value: "SFP BENGALI HINDI 380", channelCount: 146, operatorPrice: 322.03, customerPrice: 380.00 },
-  { label: "SFP BENGALI HINDI 450", value: "SFP BENGALI HINDI 450", channelCount: 157, operatorPrice: 381.36, customerPrice: 450.00 },
-  { label: "SITI FAMILY PACK-490", value: "SITI FAMILY PACK-490", channelCount: 148, operatorPrice: 415.25, customerPrice: 490.00 },
-  { label: "SFP BENGALI HINDI HD 600", value: "SFP BENGALI HINDI HD 600", channelCount: 171, operatorPrice: 508.48, customerPrice: 600.00 },
-  { label: "SFP BENGALI HINDI 320 (Alt)", value: "SFP BENGALI HINDI 320-2", channelCount: 154, operatorPrice: 271.19, customerPrice: 320.00 },
-  { label: "SFP BENGALI HINDI 380 (Alt)", value: "SFP BENGALI HINDI 380-2", channelCount: 159, operatorPrice: 322.03, customerPrice: 380.00 },
-  { label: "SFP BENGALI HINDI 450 (Alt)", value: "SFP BENGALI HINDI 450-2", channelCount: 170, operatorPrice: 381.36, customerPrice: 450.00 },
-  { label: "SITI FAMILY PACK-490 (Alt)", value: "SITI FAMILY PACK-490-2", channelCount: 161, operatorPrice: 415.25, customerPrice: 490.00 },
-  { label: "SFP BENGALI HINDI HD 600 (Alt)", value: "SFP BENGALI HINDI HD 600-2", channelCount: 184, operatorPrice: 508.48, customerPrice: 600.00 },
-  { label: "SFP TELUGU-350", value: "SFP TELUGU-350", channelCount: 138, operatorPrice: 296.61, customerPrice: 350.00 },
-  { label: "SFP TELUGU-350 (Alt)", value: "SFP TELUGU-350-2", channelCount: 124, operatorPrice: 296.61, customerPrice: 350.00 },
-  { label: "SITI FAMILY PACK-250 (Alt)", value: "SITI FAMILY PACK-250-2", channelCount: 123, operatorPrice: 211.86, customerPrice: 250.00 },
-  { label: "SFP BENGALI HINDI HD 350", value: "SFP BENGALI HINDI HD 350", channelCount: 116, operatorPrice: 296.61, customerPrice: 350.00 },
-  { label: "SITI-FAMILY HD -410", value: "SITI-FAMILY HD -410", channelCount: 129, operatorPrice: 347.46, customerPrice: 410.00 },
-  { label: "SFP BENGALI HINDI HD 350 (Alt)", value: "SFP BENGALI HINDI HD 350-2", channelCount: 104, operatorPrice: 296.61, customerPrice: 350.00 },
-  { label: "SITI-FAMILY HD-410", value: "SITI-FAMILY HD-410", channelCount: 117, operatorPrice: 347.46, customerPrice: 410.00 },
-  { label: "SITI FAMILY PACK ORIYA - 225", value: "SITI FAMILY PACK ORIYA - 225", channelCount: 113, operatorPrice: 190.68, customerPrice: 225.00 },
-  { label: "SITI-FAMILY HINDI 475", value: "SITI-FAMILY HINDI 475", channelCount: 159, operatorPrice: 402.54, customerPrice: 475.00 },
-  { label: "SITI-FAMILY HINDI 475 (Alt)", value: "SITI-FAMILY HINDI 475-2", channelCount: 146, operatorPrice: 402.54, customerPrice: 475.00 },
-  { label: "SITI FAMILY PACK ORIYA - 205", value: "SITI FAMILY PACK ORIYA - 205", channelCount: 70, operatorPrice: 173.73, customerPrice: 205.00 },
-  { label: "SFP HINDI - 250", value: "SFP HINDI - 250", channelCount: 77, operatorPrice: 211.86, customerPrice: 250.00 },
-  { label: "SFP HINDI - 250 (Alt)", value: "SFP HINDI - 250-2", channelCount: 67, operatorPrice: 211.86, customerPrice: 250.00 },
-  { label: "SFP BENGALI HINDI HD 500", value: "SFP BENGALI HINDI HD 500", channelCount: 130, operatorPrice: 423.73, customerPrice: 500.00 },
-  { label: "SFP BENGALI HINDI HD 500 (Alt)", value: "SFP BENGALI HINDI HD 500-2", channelCount: 120, operatorPrice: 423.73, customerPrice: 500.00 },
-  { label: "SFP BENGALI 220", value: "SFP BENGALI 220", channelCount: 70, operatorPrice: 186.44, customerPrice: 220.00 },
-  { label: "SFP BENGALI 220 (Alt)", value: "SFP BENGALI 220-2", channelCount: 60, operatorPrice: 186.44, customerPrice: 220.00 },
-  { label: "SFP BENGALI HINDI HD 500 (Premium)", value: "SFP BENGALI HINDI HD 500-3", channelCount: 143, operatorPrice: 423.73, customerPrice: 500.00 },
-  { label: "SITI FAMILY PACK ORIYA - 205 (Alt)", value: "SITI FAMILY PACK ORIYA - 205-2", channelCount: 76, operatorPrice: 173.73, customerPrice: 205.00 },
-  { label: "SITI FAMILY PACK ORIYA - 225 (Alt)", value: "SITI FAMILY PACK ORIYA - 225-2", channelCount: 82, operatorPrice: 190.68, customerPrice: 225.00 },
-  { label: "SITI-FAMILY HINDI 380", value: "SITI-FAMILY HINDI 380", channelCount: 103, operatorPrice: 322.03, customerPrice: 380.00 },
-  { label: "SITI-FAMILY HINDI 410", value: "SITI-FAMILY HINDI 410", channelCount: 143, operatorPrice: 347.46, customerPrice: 410.00 },
-  { label: "SFP ORIYA 360", value: "SFP ORIYA 360", channelCount: 110, operatorPrice: 305.08, customerPrice: 360.00 },
-  { label: "SFP ORIYA 270", value: "SFP ORIYA 270", channelCount: 87, operatorPrice: 228.81, customerPrice: 270.00 },
-  { label: "SFP ORIYA HD 500", value: "SFP ORIYA HD 500", channelCount: 141, operatorPrice: 423.73, customerPrice: 500.00 },
-  { label: "SITI-FAMILY HINDI 380 (Alt)", value: "SITI-FAMILY HINDI 380-2", channelCount: 113, operatorPrice: 322.03, customerPrice: 380.00 },
-  { label: "SITI-FAMILY HINDI 410 (Alt)", value: "SITI-FAMILY HINDI 410-2", channelCount: 118, operatorPrice: 347.46, customerPrice: 410.00 },
-  { label: "SITI-FAMILY HINDI 410 (Premium)", value: "SITI-FAMILY HINDI 410-3", channelCount: 114, operatorPrice: 347.46, customerPrice: 410.00 },
-  { label: "SFP ORIYA 360 (Alt)", value: "SFP ORIYA 360-2", channelCount: 118, operatorPrice: 305.08, customerPrice: 360.00 },
-  { label: "SITI-FAMILY HINDI 320", value: "SITI-FAMILY HINDI 320", channelCount: 89, operatorPrice: 271.19, customerPrice: 320.00 },
-  { label: "SITI-FAMILY HINDI 320 (Alt)", value: "SITI-FAMILY HINDI 320-2", channelCount: 79, operatorPrice: 271.19, customerPrice: 320.00 },
-  { label: "SITI-FAMILY HINDI 320 (Premium)", value: "SITI-FAMILY HINDI 320-3", channelCount: 83, operatorPrice: 271.19, customerPrice: 320.00 },
-  { label: "SFP ORIYA 270 (Alt)", value: "SFP ORIYA 270-2", channelCount: 95, operatorPrice: 228.81, customerPrice: 270.00 },
-  { label: "SFP ORIYA HD 500 (Alt)", value: "SFP ORIYA HD 500-2", channelCount: 149, operatorPrice: 423.73, customerPrice: 500.00 },
-  { label: "SITI FAMILY PACK HINDI HD - 300", value: "SITI FAMILY PACK HINDI HD - 300", channelCount: 64, operatorPrice: 254.24, customerPrice: 300.00 },
-  { label: "SITI FAMILY PACK HINDI HD - 300 (Alt)", value: "SITI FAMILY PACK HINDI HD - 300-2", channelCount: 75, operatorPrice: 254.24, customerPrice: 300.00 },
-  { label: "SFP BENGALI-240", value: "SFP BENGALI-240", channelCount: 76, operatorPrice: 203.39, customerPrice: 240.00 },
-  { label: "SITI-FAMILY HINDI HD 630", value: "SITI-FAMILY HINDI HD 630", channelCount: 127, operatorPrice: 533.90, customerPrice: 630.00 },
-  { label: "SFP BENGALI-240 (Alt)", value: "SFP BENGALI-240-2", channelCount: 66, operatorPrice: 203.39, customerPrice: 240.00 },
-  { label: "SITI-FAMILY HINDI HD 630A", value: "SITI-FAMILY HINDI HD 630A", channelCount: 116, operatorPrice: 533.90, customerPrice: 630.00 },
-  { label: "SITI-FAMILY HINDI HD 630 (Alt)", value: "SITI-FAMILY HINDI HD 630-2", channelCount: 117, operatorPrice: 533.90, customerPrice: 630.00 },
-  { label: "SITI FAMILY PACK 190", value: "SITI FAMILY PACK 190", channelCount: 55, operatorPrice: 161.02, customerPrice: 190.00 },
-  { label: "SITI FAMILY PACK 190 (Alt)", value: "SITI FAMILY PACK 190-2", channelCount: 45, operatorPrice: 161.02, customerPrice: 190.00 },
-  { label: "SITI FAMILY HINDI 190", value: "SITI FAMILY HINDI 190", channelCount: 56, operatorPrice: 161.02, customerPrice: 190.00 },
-  { label: "SITI FAMILY SPORTS 330", value: "SITI FAMILY SPORTS 330", channelCount: 90, operatorPrice: 279.66, customerPrice: 330.00 },
-  { label: "SITI FAMILY SPORTS HINDI 325", value: "SITI FAMILY SPORTS HINDI 325", channelCount: 91, operatorPrice: 275.42, customerPrice: 325.00 },
-  { label: "SITI FAMILY HINDI 190 (Alt)", value: "SITI FAMILY HINDI 190-2", channelCount: 46, operatorPrice: 161.02, customerPrice: 190.00 },
-  { label: "SITI FAMILY SPORTS 330 (Alt)", value: "SITI FAMILY SPORTS 330-2", channelCount: 80, operatorPrice: 279.66, customerPrice: 330.00 },
-  { label: "SITI FAMILY SPORTS HINDI 325 (Alt)", value: "SITI FAMILY SPORTS HINDI 325-2", channelCount: 81, operatorPrice: 275.42, customerPrice: 325.00 },
-  { label: "SFP BENGALI HINDI 270", value: "SFP BENGALI HINDI 270", channelCount: 104, operatorPrice: 228.81, customerPrice: 270.00 },
-  { label: "SITI FAMILY PACK 360", value: "SITI FAMILY PACK 360", channelCount: 99, operatorPrice: 305.08, customerPrice: 360.00 },
-  { label: "SFP HINDI 270", value: "SFP HINDI 270", channelCount: 96, operatorPrice: 228.81, customerPrice: 270.00 },
-  { label: "SITI FAMILY PACK HINDI 350 NEW", value: "SITI FAMILY PACK HINDI 350 NEW", channelCount: 92, operatorPrice: 296.61, customerPrice: 350.00 },
-  { label: "SFP ORIYA 400", value: "SFP ORIYA 400", channelCount: 131, operatorPrice: 338.98, customerPrice: 400.00 },
-  { label: "SITI FAMILY PACK HD 650", value: "SITI FAMILY PACK HD 650", channelCount: 146, operatorPrice: 550.85, customerPrice: 650.00 },
-  { label: "SITI FAMILY PACK 550", value: "SITI FAMILY PACK 550", channelCount: 129, operatorPrice: 466.10, customerPrice: 550.00 },
-  { label: "SITI FAMILY PACK HD 650 (Alt)", value: "SITI FAMILY PACK HD 650-2", channelCount: 137, operatorPrice: 550.85, customerPrice: 650.00 },
-  { label: "SITI FAMILY PACK 550 (Alt)", value: "SITI FAMILY PACK 550-2", channelCount: 119, operatorPrice: 466.10, customerPrice: 550.00 },
-  { label: "SITI FAMILY PACK HINDI HD-500", value: "SITI FAMILY PACK HINDI HD-500", channelCount: 102, operatorPrice: 423.73, customerPrice: 500.00 },
-  { label: "SITI FAMILY PACK HINDI HD-500 (Alt)", value: "SITI FAMILY PACK HINDI HD-500-2", channelCount: 92, operatorPrice: 423.73, customerPrice: 500.00 },
-  { label: "SITI FAMILY ORIYA 190", value: "SITI FAMILY ORIYA 190", channelCount: 55, operatorPrice: 161.02, customerPrice: 190.00 },
-  { label: "SITI FAMILY ORIYA 190 (Alt)", value: "SITI FAMILY ORIYA 190-2", channelCount: 45, operatorPrice: 161.02, customerPrice: 190.00 },
-  { label: "SITI HD SPORTS 400", value: "SITI HD SPORTS 400", channelCount: 94, operatorPrice: 338.98, customerPrice: 400.00 },
-  { label: "SITI HD SPORTS 400 (Alt)", value: "SITI HD SPORTS 400-2", channelCount: 84, operatorPrice: 338.98, customerPrice: 400.00 },
-  { label: "BST JANTA", value: "BST JANTA", channelCount: 41, operatorPrice: 0.00, customerPrice: 0.00 },
-  { label: "SFP BENGALI HINDI 270 (Alt)", value: "SFP BENGALI HINDI 270-2", channelCount: 94, operatorPrice: 228.81, customerPrice: 270.00 },
-  { label: "SITI FAMILY PACK 360 (Alt)", value: "SITI FAMILY PACK 360-2", channelCount: 89, operatorPrice: 305.08, customerPrice: 360.00 },
-  { label: "SFP HINDI 270 (Alt)", value: "SFP HINDI 270-2", channelCount: 86, operatorPrice: 228.81, customerPrice: 270.00 }
-];
+import { TrendingUp } from 'lucide-react';
+import { RechargeForm } from './recharge/RechargeForm';
+import { RechargeFilters } from './recharge/RechargeFilters';
+import { RechargeList } from './recharge/RechargeList';
 
 interface Recharge {
   id: number;
@@ -111,28 +26,9 @@ export const RechargeTracker = () => {
     { id: 3, customer: 'Mike Johnson', service: 'TV', pack: 'Basic Package', amount: 299, time: '11:00 AM', date: '2024-06-13', status: 'pending' }
   ]);
 
-  const [newRecharge, setNewRecharge] = useState({
-    customer: '',
-    service: '',
-    company: '',
-    selectedPack: null as Pack | null,
-    pack: '',
-    amount: 0
-  });
-
   const [searchTerm, setSearchTerm] = useState('');
   const [serviceFilter, setServiceFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
-
-  // Cable TV: SITI & GTPL only. Broadband: Alliance & GTPL only.
-  const tvCompanies = [
-    { value: "SITI", label: "SITI" },
-    { value: "GTPL", label: "GTPL" }
-  ];
-  const internetCompanies = [
-    { value: "Alliance", label: "Alliance" },
-    { value: "GTPL", label: "GTPL" }
-  ];
 
   const filteredRecharges = recharges.filter(recharge => {
     const matchesSearch = recharge.customer.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -143,46 +39,16 @@ export const RechargeTracker = () => {
     return matchesSearch && matchesService && matchesStatus;
   });
 
-  const handleAddRecharge = () => {
-    if (!newRecharge.customer || !newRecharge.service || !newRecharge.company) {
-      toast({
-        title: "Missing Information",
-        description: "Please fill in all required fields",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    // Amount logic: for SITI, amount comes from pack; else, default/0.
-    let amount = 0;
-    let packName = '';
-    
-    if (newRecharge.company === 'SITI' && newRecharge.service === 'TV' && newRecharge.selectedPack) {
-      amount = newRecharge.selectedPack.customerPrice ?? newRecharge.selectedPack.operatorPrice;
-      packName = newRecharge.selectedPack.label;
-    } else {
-      amount = Number(newRecharge.amount) || 0;
-      packName = newRecharge.pack || 'Standard';
-    }
-
+  const handleAddRecharge = (newRechargeData: Omit<Recharge, 'id' | 'time' | 'date' | 'status'>) => {
     const recharge: Recharge = {
       id: Date.now(),
-      customer: newRecharge.customer,
-      service: newRecharge.service,
-      pack: packName,
-      amount,
+      ...newRechargeData,
       time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
       date: new Date().toISOString().split('T')[0],
       status: 'completed'
     };
 
     setRecharges([recharge, ...recharges]);
-    setNewRecharge({ customer: '', service: '', company: '', selectedPack: null, pack: '', amount: 0 });
-    
-    toast({
-      title: "Recharge Added",
-      description: `Successfully recorded recharge for ${newRecharge.customer}`,
-    });
   };
 
   const handleDeleteRecharge = (id: number) => {
@@ -231,183 +97,20 @@ export const RechargeTracker = () => {
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
-        {/* Add New Recharge Form */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-          <Input
-            placeholder="Customer Name"
-            value={newRecharge.customer}
-            onChange={(e) => setNewRecharge({ ...newRecharge, customer: e.target.value })}
-          />
-          <Select
-            value={newRecharge.service}
-            onValueChange={(value) => setNewRecharge({ ...newRecharge, service: value, company: '', selectedPack: null, pack: '', amount: 0 })}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Service Type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="TV">Cable TV</SelectItem>
-              <SelectItem value="Internet">Broadband</SelectItem>
-            </SelectContent>
-          </Select>
-          
-          {/* Company dropdown */}
-          <Select
-            value={newRecharge.company}
-            onValueChange={(value) => setNewRecharge({ ...newRecharge, company: value, selectedPack: null, pack: '', amount: 0 })}
-            disabled={!newRecharge.service}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Company" />
-            </SelectTrigger>
-            <SelectContent>
-              {newRecharge.service === "TV" &&
-                tvCompanies.map(company => (
-                  <SelectItem key={company.value} value={company.value}>{company.label}</SelectItem>
-                ))}
-              {newRecharge.service === "Internet" &&
-                internetCompanies.map(company => (
-                  <SelectItem key={company.value} value={company.value}>{company.label}</SelectItem>
-                ))}
-            </SelectContent>
-          </Select>
-          
-          {/* Pack/Plan logic */}
-          {newRecharge.service === "TV" && newRecharge.company === "SITI" ? (
-            <PackComboBox
-              packs={SITI_PACKS}
-              value={newRecharge.selectedPack}
-              onChange={(selectedPack) => {
-                setNewRecharge({
-                  ...newRecharge,
-                  selectedPack: selectedPack,
-                  amount: selectedPack ? (selectedPack.customerPrice ?? selectedPack.operatorPrice) : 0
-                });
-              }}
-              placeholder="Search or choose pack..."
-            />
-          ) : (
-            <Input
-              placeholder="Pack/Plan Name"
-              type="text"
-              value={newRecharge.pack}
-              onChange={(e) => setNewRecharge({ ...newRecharge, pack: e.target.value })}
-            />
-          )}
-          
-          {/* Amount input for non-SITI services or when no pack is selected */}
-          {!(newRecharge.company === 'SITI' && newRecharge.service === 'TV' && newRecharge.selectedPack) && (
-            <Input
-              placeholder="Amount"
-              type="number"
-              value={newRecharge.amount || ''}
-              onChange={(e) => setNewRecharge({ ...newRecharge, amount: Number(e.target.value) })}
-            />
-          )}
-
-          {/* Show selected SITI pack details */}
-          {newRecharge.company === 'SITI' && newRecharge.service === 'TV' && newRecharge.selectedPack && (
-            <div className="col-span-2 p-3 bg-muted rounded-lg">
-              <div className="flex justify-between items-center">
-                <div>
-                  <div className="font-medium">{newRecharge.selectedPack.label}</div>
-                  <div className="text-sm text-muted-foreground">{newRecharge.selectedPack.channelCount} channels</div>
-                </div>
-                <div className="text-right">
-                  <div className="font-bold">₹{newRecharge.selectedPack.customerPrice ?? newRecharge.selectedPack.operatorPrice}</div>
-                  {newRecharge.selectedPack.customerPrice !== undefined && (
-                    <div className="text-sm text-muted-foreground">Operator: ₹{newRecharge.selectedPack.operatorPrice}</div>
-                  )}
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-        <Button onClick={handleAddRecharge} className="w-full">
-          Add Recharge
-        </Button>
-
-        {/* Filters */}
-        <div className="flex flex-col sm:flex-row gap-2">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search customer or pack..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
-            />
-          </div>
-          <Select value={serviceFilter} onValueChange={setServiceFilter}>
-            <SelectTrigger className="w-[120px]">
-              <SelectValue placeholder="Service" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Services</SelectItem>
-              <SelectItem value="TV">TV</SelectItem>
-              <SelectItem value="Internet">Internet</SelectItem>
-            </SelectContent>
-          </Select>
-          <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-[120px]">
-              <SelectValue placeholder="Status" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Status</SelectItem>
-              <SelectItem value="completed">Completed</SelectItem>
-              <SelectItem value="pending">Pending</SelectItem>
-              <SelectItem value="failed">Failed</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        {/* Recharge List */}
-        <div className="space-y-2 max-h-64 overflow-y-auto">
-          {filteredRecharges.map((recharge) => (
-            <div key={recharge.id} className="flex items-center justify-between p-3 bg-muted rounded-lg hover:bg-muted/80 transition-colors">
-              <div className="flex-1">
-                <div className="font-medium">{recharge.customer}</div>
-                <div className="text-sm text-muted-foreground">
-                  {recharge.pack} • {recharge.time}
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <Badge 
-                  variant={recharge.service === 'TV' ? 'default' : 'secondary'}
-                  className="cursor-pointer"
-                  onClick={() => toggleStatus(recharge.id)}
-                >
-                  {recharge.service}
-                </Badge>
-                <Badge 
-                  variant={
-                    recharge.status === 'completed' ? 'default' : 
-                    recharge.status === 'pending' ? 'secondary' : 'destructive'
-                  }
-                  className="cursor-pointer"
-                  onClick={() => toggleStatus(recharge.id)}
-                >
-                  {recharge.status}
-                </Badge>
-                <span className="font-bold">₹{recharge.amount}</span>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => handleDeleteRecharge(recharge.id)}
-                  className="h-8 w-8 p-0 text-destructive hover:text-destructive"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-          ))}
-        </div>
-        
-        {filteredRecharges.length === 0 && (
-          <div className="text-center py-4 text-muted-foreground">
-            No recharges found matching your criteria.
-          </div>
-        )}
+        <RechargeForm onAddRecharge={handleAddRecharge} />
+        <RechargeFilters
+          searchTerm={searchTerm}
+          serviceFilter={serviceFilter}
+          statusFilter={statusFilter}
+          onSearchChange={setSearchTerm}
+          onServiceFilterChange={setServiceFilter}
+          onStatusFilterChange={setStatusFilter}
+        />
+        <RechargeList
+          recharges={filteredRecharges}
+          onDeleteRecharge={handleDeleteRecharge}
+          onToggleStatus={toggleStatus}
+        />
       </CardContent>
     </Card>
   );
