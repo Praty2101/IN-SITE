@@ -43,12 +43,18 @@ export const PackComboBox: React.FC<PackComboBoxProps> = ({
 
   const displayValue = value ? value.label : search;
 
+  const handleSelectPack = (pack: Pack) => {
+    onChange(pack);
+    setSearch('');
+    setOpen(false);
+  };
+
   return (
     <div className="relative">
       <Input
         placeholder={placeholder}
         onFocus={() => setOpen(true)}
-        onBlur={() => setTimeout(() => setOpen(false), 120)}
+        onBlur={() => setTimeout(() => setOpen(false), 200)}
         value={displayValue}
         onChange={e => {
           setSearch(e.target.value);
@@ -60,7 +66,7 @@ export const PackComboBox: React.FC<PackComboBoxProps> = ({
         className="cursor-text"
       />
       {open && (
-        <div className="absolute z-50 bg-white dark:bg-background border border-border mt-1 w-full rounded shadow-lg animate-in fade-in-0">
+        <div className="absolute z-50 bg-white dark:bg-gray-800 border border-border mt-1 w-full rounded shadow-lg animate-in fade-in-0">
           <Command>
             <CommandList>
               <CommandEmpty>No pack found.</CommandEmpty>
@@ -68,12 +74,8 @@ export const PackComboBox: React.FC<PackComboBoxProps> = ({
                 {filtered.map((pack, idx) => (
                   <CommandItem
                     key={`${pack.value}-${pack.channelCount}-${pack.operatorPrice}-${idx}`}
-                    onMouseDown={e => e.preventDefault()}
-                    onClick={() => {
-                      onChange(pack);
-                      setSearch('');
-                      setOpen(false);
-                    }}
+                    onSelect={() => handleSelectPack(pack)}
+                    className="cursor-pointer"
                   >
                     <div className="flex items-center justify-between w-full">
                       <span>
