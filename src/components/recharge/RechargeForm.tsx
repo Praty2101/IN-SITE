@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -15,6 +14,8 @@ interface Recharge {
   service: string;
   pack: string;
   amount: number;
+  customerPrice?: number;
+  operatorPrice?: number;
   time: string;
   date: string;
   status: 'completed' | 'pending' | 'failed';
@@ -46,21 +47,32 @@ export const RechargeForm: React.FC<RechargeFormProps> = ({ onAddRecharge }) => 
     }
 
     let amount = 0;
+    let customerPrice: number | undefined;
+    let operatorPrice: number | undefined;
     let packName = '';
     
     if (newRecharge.company === 'SITI' && newRecharge.service === 'TV' && newRecharge.selectedPack) {
-      amount = newRecharge.selectedPack.customerPrice ?? newRecharge.selectedPack.operatorPrice;
+      // For SITI TV packs, always use customer price as the main amount
+      customerPrice = newRecharge.selectedPack.customerPrice ?? newRecharge.selectedPack.operatorPrice;
+      operatorPrice = newRecharge.selectedPack.operatorPrice;
+      amount = customerPrice; // Customer pays the customer price
       packName = newRecharge.selectedPack.label;
     } else {
+      // For other services, use the manually entered amount
       amount = Number(newRecharge.amount) || 0;
       packName = newRecharge.pack || 'Standard';
+      // For non-SITI services, the amount is both customer and operator price
+      customerPrice = amount;
+      operatorPrice = amount;
     }
 
     onAddRecharge({
       customer: newRecharge.customer,
       service: newRecharge.service,
       pack: packName,
-      amount
+      amount,
+      customerPrice,
+      operatorPrice
     });
 
     setNewRecharge({ 
@@ -74,7 +86,7 @@ export const RechargeForm: React.FC<RechargeFormProps> = ({ onAddRecharge }) => 
     
     toast({
       title: "Recharge Added",
-      description: `Successfully recorded recharge for ${newRecharge.customer}`,
+      description: `Successfully recorded recharge for ${newRecharge.customer} - Customer Price: ₹${customerPrice}`,
     });
   };
 
@@ -149,7 +161,7 @@ export const RechargeForm: React.FC<RechargeFormProps> = ({ onAddRecharge }) => 
         
         {shouldShowAmountInput && (
           <Input
-            placeholder="Amount"
+            placeholder="Customer Price"
             type="number"
             value={newRecharge.amount || ''}
             onChange={(e) => setNewRecharge({ ...newRecharge, amount: Number(e.target.value) })}

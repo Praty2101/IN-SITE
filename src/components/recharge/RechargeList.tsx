@@ -11,6 +11,8 @@ interface Recharge {
   service: string;
   pack: string;
   amount: number;
+  customerPrice?: number;
+  operatorPrice?: number;
   time: string;
   date: string;
   status: 'completed' | 'pending' | 'failed';
@@ -44,6 +46,11 @@ export const RechargeList: React.FC<RechargeListProps> = ({
             <div className="text-sm text-muted-foreground">
               {recharge.pack} • {recharge.time}
             </div>
+            {recharge.customerPrice && recharge.operatorPrice && recharge.customerPrice !== recharge.operatorPrice && (
+              <div className="text-xs text-muted-foreground">
+                Operator: ₹{recharge.operatorPrice}
+              </div>
+            )}
           </div>
           <div className="flex items-center gap-2">
             <Badge 
@@ -63,7 +70,10 @@ export const RechargeList: React.FC<RechargeListProps> = ({
             >
               {recharge.status}
             </Badge>
-            <span className="font-bold">₹{recharge.amount}</span>
+            <div className="text-right">
+              <span className="font-bold">₹{recharge.customerPrice || recharge.amount}</span>
+              <div className="text-xs text-muted-foreground">Customer</div>
+            </div>
             <Button
               variant="ghost"
               size="sm"

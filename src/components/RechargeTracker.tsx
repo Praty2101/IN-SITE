@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
@@ -13,6 +12,8 @@ interface Recharge {
   service: string;
   pack: string;
   amount: number;
+  customerPrice?: number;
+  operatorPrice?: number;
   time: string;
   date: string;
   status: 'completed' | 'pending' | 'failed';
@@ -21,9 +22,9 @@ interface Recharge {
 export const RechargeTracker = () => {
   const { toast } = useToast();
   const [recharges, setRecharges] = useState<Recharge[]>([
-    { id: 1, customer: 'John Doe', service: 'TV', pack: 'Premium Sports', amount: 599, time: '09:30 AM', date: '2024-06-13', status: 'completed' },
-    { id: 2, customer: 'Jane Smith', service: 'Internet', pack: '100 Mbps', amount: 899, time: '10:15 AM', date: '2024-06-13', status: 'completed' },
-    { id: 3, customer: 'Mike Johnson', service: 'TV', pack: 'Basic Package', amount: 299, time: '11:00 AM', date: '2024-06-13', status: 'pending' }
+    { id: 1, customer: 'John Doe', service: 'TV', pack: 'Premium Sports', amount: 599, customerPrice: 599, operatorPrice: 508, time: '09:30 AM', date: '2024-06-13', status: 'completed' },
+    { id: 2, customer: 'Jane Smith', service: 'Internet', pack: '100 Mbps', amount: 899, customerPrice: 899, operatorPrice: 899, time: '10:15 AM', date: '2024-06-13', status: 'completed' },
+    { id: 3, customer: 'Mike Johnson', service: 'TV', pack: 'Basic Package', amount: 299, customerPrice: 299, operatorPrice: 254, time: '11:00 AM', date: '2024-06-13', status: 'pending' }
   ]);
 
   const [searchTerm, setSearchTerm] = useState('');
@@ -67,8 +68,8 @@ export const RechargeTracker = () => {
     ));
   };
 
-  // Calculate stats
-  const totalAmount = filteredRecharges.reduce((sum, r) => sum + r.amount, 0);
+  // Calculate stats - use customer price for total amount calculation
+  const totalAmount = filteredRecharges.reduce((sum, r) => sum + (r.customerPrice || r.amount), 0);
   const completedCount = filteredRecharges.filter(r => r.status === 'completed').length;
   const successRate = filteredRecharges.length > 0 ? Math.round((completedCount / filteredRecharges.length) * 100) : 0;
 
@@ -80,7 +81,7 @@ export const RechargeTracker = () => {
             <CardTitle>Daily Recharge Tracking</CardTitle>
             <div className="grid grid-cols-3 gap-4 mt-2">
               <div className="text-center">
-                <div className="text-sm text-muted-foreground">Total</div>
+                <div className="text-sm text-muted-foreground">Total (Customer)</div>
                 <div className="font-bold">₹{totalAmount.toLocaleString()}</div>
               </div>
               <div className="text-center">
