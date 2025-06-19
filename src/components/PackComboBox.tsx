@@ -18,18 +18,15 @@ interface PackComboBoxProps {
   onChange: (pack: Pack) => void;  // Triggered on selection
   placeholder?: string;
 }
+
 export const PackComboBox: React.FC<PackComboBoxProps> = ({
   packs,
   value,
   onChange,
-  onSelectPack,
   placeholder = 'Search or choose pack...',
 }) => {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
-
-  // Find selected pack for display
-  const selectedPack = packs.find(p => p.value === value);
 
   // Fuzzy search (searches label, price, and channelCount)
   const filtered = useMemo(() => {
@@ -44,16 +41,21 @@ export const PackComboBox: React.FC<PackComboBoxProps> = ({
     );
   }, [packs, search]);
 
+  const displayValue = value ? value.label : search;
+
   return (
     <div className="relative">
       <Input
         placeholder={placeholder}
         onFocus={() => setOpen(true)}
         onBlur={() => setTimeout(() => setOpen(false), 120)}
-        value={search || (selectedPack ? selectedPack.label : value)}
+        value={displayValue}
         onChange={e => {
           setSearch(e.target.value);
-          onChange(''); // clear selection on typing
+          // Clear selection when typing
+          if (value) {
+            onChange(null);
+          }
         }}
         className="cursor-text"
       />
@@ -68,10 +70,9 @@ export const PackComboBox: React.FC<PackComboBoxProps> = ({
                     key={`${pack.value}-${pack.channelCount}-${pack.operatorPrice}-${idx}`}
                     onMouseDown={e => e.preventDefault()}
                     onClick={() => {
-                      onChange(pack.value);
+                      onChange(pack);
                       setSearch('');
                       setOpen(false);
-                      if (onSelectPack) onSelectPack(pack);
                     }}
                   >
                     <div className="flex items-center justify-between w-full">

@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -6,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { Trash2, Search, Filter, TrendingUp } from 'lucide-react';
-import { PackComboBox } from './PackComboBox';
+import { PackComboBox, Pack } from './PackComboBox';
 
 // Complete SITI Cable TV packs from your database (all 79 packs)
 const SITI_PACKS = [
@@ -114,6 +115,7 @@ export const RechargeTracker = () => {
     customer: '',
     service: '',
     company: '',
+    selectedPack: null as Pack | null,
     pack: '',
     amount: 0
   });
@@ -131,11 +133,6 @@ export const RechargeTracker = () => {
     { value: "Alliance", label: "Alliance" },
     { value: "GTPL", label: "GTPL" }
   ];
-
-  // Find selected SITI pack for price display
-  const selectedSitiPack = newRecharge.company === 'SITI' && newRecharge.service === 'TV'
-    ? SITI_PACKS.find(p => p.value === newRecharge.pack)
-    : null;
 
   const filteredRecharges = recharges.filter(recharge => {
     const matchesSearch = recharge.customer.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -158,18 +155,21 @@ export const RechargeTracker = () => {
 
     // Amount logic: for SITI, amount comes from pack; else, default/0.
     let amount = 0;
-    if (newRecharge.company === 'SITI' && newRecharge.service === 'TV') {
-      const packObj = SITI_PACKS.find(p => p.value === newRecharge.pack);
-      amount = packObj ? (packObj.customerPrice ?? packObj.operatorPrice) : 0;
+    let packName = '';
+    
+    if (newRecharge.company === 'SITI' && newRecharge.service === 'TV' && newRecharge.selectedPack) {
+      amount = newRecharge.selectedPack.customerPrice ?? newRecharge.selectedPack.operatorPrice;
+      packName = newRecharge.selectedPack.label;
     } else {
       amount = Number(newRecharge.amount) || 0;
+      packName = newRecharge.pack || 'Standard';
     }
 
     const recharge: Recharge = {
       id: Date.now(),
       customer: newRecharge.customer,
       service: newRecharge.service,
-      pack: newRecharge.pack || 'Standard',
+      pack: packName,
       amount,
       time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
       date: new Date().toISOString().split('T')[0],
@@ -177,7 +177,7 @@ export const RechargeTracker = () => {
     };
 
     setRecharges([recharge, ...recharges]);
-    setNewRecharge({ customer: '', service: '', company: '', pack: '', amount: 0 });
+    setNewRecharge({ customer: '', service: '', company: '', selectedPack: null, pack: '', amount: 0 });
     
     toast({
       title: "Recharge Added",
@@ -240,7 +240,7 @@ export const RechargeTracker = () => {
           />
           <Select
             value={newRecharge.service}
-            onValueChange={(value) => setNewRecharge({ ...newRecharge, service: value, company: '', pack: '', amount: 0 })}
+            onValueChange={(value) => setNewRecharge({ ...newRecharge, service: value, company: '', selectedPack: null, pack: '', amount: 0 })}
           >
             <SelectTrigger>
               <SelectValue placeholder="Service Type" />
@@ -254,7 +254,7 @@ export const RechargeTracker = () => {
           {/* Company dropdown */}
           <Select
             value={newRecharge.company}
-            onValueChange={(value) => setNewRecharge({ ...newRecharge, company: value, pack: '', amount: 0 })}
+            onValueChange={(value) => setNewRecharge({ ...newRecharge, company: value, selectedPack: null, pack: '', amount: 0 })}
             disabled={!newRecharge.service}
           >
             <SelectTrigger>
@@ -276,20 +276,12 @@ export const RechargeTracker = () => {
           {newRecharge.service === "TV" && newRecharge.company === "SITI" ? (
             <PackComboBox
               packs={SITI_PACKS}
-              value={newRecharge.pack}
-              onChange={(selectedValue) => {
-                const packObj = SITI_PACKS.find(p => p.value === selectedValue);
+              value={newRecharge.selectedPack}
+              onChange={(selectedPack) => {
                 setNewRecharge({
                   ...newRecharge,
-                  pack: selectedValue,
-                  amount: packObj?.customerPrice ?? packObj?.operatorPrice ?? 0
-                });
-              }}
-              onSelectPack={packObj => {
-                setNewRecharge({
-                  ...newRecharge,
-                  pack: packObj.value,
-                  amount: packObj.customerPrice ?? packObj.operatorPrice ?? 0
+                  selectedPack: selectedPack,
+                  amount: selectedPack ? (selectedPack.customerPrice ?? selectedPack.operatorPrice) : 0
                 });
               }}
               placeholder="Search or choose pack..."
@@ -303,32 +295,33 @@ export const RechargeTracker = () => {
             />
           )}
           
-          
-          
-          {/* Show SITI pack price in read-only mode */}
-          {(newRecharge.company === 'SITI' && newRecharge.service === 'TV' && selectedSitiPack) && (
-  <div className="flex gap-2">
-    {/* Editable Customer Amount */}
-    <Input
-      placeholder="Customer Amount"
-      type="number"
-      value={newRecharge.customerAmount ?? selectedSitiPack.customerPrice ?? selectedSitiPack.operatorPrice}
-      onChange={(e) => setNewRecharge({ ...newRecharge, customerAmount: Number(e.target.value) })}
-      className="bg-white"
-    />
+          {/* Amount input for non-SITI services or when no pack is selected */}
+          {!(newRecharge.company === 'SITI' && newRecharge.service === 'TV' && newRecharge.selectedPack) && (
+            <Input
+              placeholder="Amount"
+              type="number"
+              value={newRecharge.amount || ''}
+              onChange={(e) => setNewRecharge({ ...newRecharge, amount: Number(e.target.value) })}
+            />
+          )}
 
-    {/* Editable Operator Deduction if customerPrice is defined */}
-    {selectedSitiPack.customerPrice !== undefined && (
-      <Input
-        placeholder="Operator Deduction"
-        type="number"
-        value={newRecharge.operatorAmount ?? selectedSitiPack.operatorPrice}
-        onChange={(e) => setNewRecharge({ ...newRecharge, operatorAmount: Number(e.target.value) })}
-        className="bg-white"
-      />
-    )}
-  </div>
-)}
+          {/* Show selected SITI pack details */}
+          {newRecharge.company === 'SITI' && newRecharge.service === 'TV' && newRecharge.selectedPack && (
+            <div className="col-span-2 p-3 bg-muted rounded-lg">
+              <div className="flex justify-between items-center">
+                <div>
+                  <div className="font-medium">{newRecharge.selectedPack.label}</div>
+                  <div className="text-sm text-muted-foreground">{newRecharge.selectedPack.channelCount} channels</div>
+                </div>
+                <div className="text-right">
+                  <div className="font-bold">₹{newRecharge.selectedPack.customerPrice ?? newRecharge.selectedPack.operatorPrice}</div>
+                  {newRecharge.selectedPack.customerPrice !== undefined && (
+                    <div className="text-sm text-muted-foreground">Operator: ₹{newRecharge.selectedPack.operatorPrice}</div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
         <Button onClick={handleAddRecharge} className="w-full">
           Add Recharge
