@@ -9,6 +9,78 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      customers: {
+        Row: {
+          address: string
+          city: string | null
+          connection_date: string
+          created_at: string
+          customer_id: string
+          email: string | null
+          id: string
+          last_payment_date: string | null
+          monthly_amount: number
+          name: string
+          next_due_date: string | null
+          notes: string | null
+          phone: string | null
+          pincode: string | null
+          plan_details: string | null
+          plan_name: string
+          service_type: string
+          state: string | null
+          status: string
+          total_paid: number | null
+          updated_at: string
+        }
+        Insert: {
+          address: string
+          city?: string | null
+          connection_date?: string
+          created_at?: string
+          customer_id: string
+          email?: string | null
+          id?: string
+          last_payment_date?: string | null
+          monthly_amount: number
+          name: string
+          next_due_date?: string | null
+          notes?: string | null
+          phone?: string | null
+          pincode?: string | null
+          plan_details?: string | null
+          plan_name: string
+          service_type: string
+          state?: string | null
+          status?: string
+          total_paid?: number | null
+          updated_at?: string
+        }
+        Update: {
+          address?: string
+          city?: string | null
+          connection_date?: string
+          created_at?: string
+          customer_id?: string
+          email?: string | null
+          id?: string
+          last_payment_date?: string | null
+          monthly_amount?: number
+          name?: string
+          next_due_date?: string | null
+          notes?: string | null
+          phone?: string | null
+          pincode?: string | null
+          plan_details?: string | null
+          plan_name?: string
+          service_type?: string
+          state?: string | null
+          status?: string
+          total_paid?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       SITI: {
         Row: {
           actual_price: number | null
