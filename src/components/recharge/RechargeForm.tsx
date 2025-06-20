@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -7,6 +8,7 @@ import { Pack } from '@/data/packData';
 import { CompanySelector } from './CompanySelector';
 import { PackSelector } from './PackSelector';
 import { SelectedPackDisplay } from './SelectedPackDisplay';
+import { CustomerSelector } from './CustomerSelector';
 
 interface Recharge {
   id: number;
@@ -28,6 +30,7 @@ interface RechargeFormProps {
 export const RechargeForm: React.FC<RechargeFormProps> = ({ onAddRecharge }) => {
   const { toast } = useToast();
   const [newRecharge, setNewRecharge] = useState({
+    customerId: '',
     customer: '',
     service: '',
     company: '',
@@ -76,6 +79,7 @@ export const RechargeForm: React.FC<RechargeFormProps> = ({ onAddRecharge }) => 
     });
 
     setNewRecharge({ 
+      customerId: '',
       customer: '', 
       service: '', 
       company: '', 
@@ -123,15 +127,23 @@ export const RechargeForm: React.FC<RechargeFormProps> = ({ onAddRecharge }) => 
     setNewRecharge({ ...newRecharge, pack: name });
   };
 
+  const handleCustomerChange = (customerId: string, customerName: string) => {
+    setNewRecharge({
+      ...newRecharge,
+      customerId,
+      customer: customerName
+    });
+  };
+
   const shouldShowAmountInput = !(newRecharge.company === 'SITI' && newRecharge.service === 'TV' && newRecharge.selectedPack);
 
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-        <Input
-          placeholder="Customer Name"
-          value={newRecharge.customer}
-          onChange={(e) => setNewRecharge({ ...newRecharge, customer: e.target.value })}
+        <CustomerSelector
+          selectedCustomerId={newRecharge.customerId}
+          selectedCustomerName={newRecharge.customer}
+          onCustomerChange={handleCustomerChange}
         />
         
         <Select value={newRecharge.service} onValueChange={handleServiceChange}>
