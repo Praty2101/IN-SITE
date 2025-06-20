@@ -1,10 +1,11 @@
 
 import React, { useState, useEffect } from 'react';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Search } from 'lucide-react';
+import { Check } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface Customer {
   id: string;
@@ -29,11 +30,16 @@ export const CustomerSelector: React.FC<CustomerSelectorProps> = ({
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const [showSearch, setShowSearch] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [inputValue, setInputValue] = useState(selectedCustomerName);
 
   useEffect(() => {
     fetchCustomers();
   }, []);
+
+  useEffect(() => {
+    setInputValue(selectedCustomerName);
+  }, [selectedCustomerName]);
 
   const fetchCustomers = async () => {
     try {
@@ -67,63 +73,84 @@ export const CustomerSelector: React.FC<CustomerSelectorProps> = ({
     customer.phone?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleCustomerSelect = (customerId: string) => {
-    const customer = customers.find(c => c.id === customerId);
-    if (customer) {
-      onCustomerChange(customerId, customer.name);
-      setShowSearch(false);
-      setSearchTerm('');
+  const handleInputChange = (value: string) => {
+    setInputValue(value);
+    setSearchTerm(value);
+    setShowSuggestions(value.length > 0);
+    
+    // Clear selection if input doesn't match selected customer
+    if (value !== selectedCustomerName) {
+      onCustomerChange('', '');
     }
   };
 
-  return (
-    <div className="space-y-2">
-      <div className="flex gap-2">
-        <Select
-          value={selectedCustomerId}
-          onValueChange={handleCustomerSelect}
-          disabled={loading}
-        >
-          <SelectTrigger className="flex-1">
-            <SelectValue placeholder={loading ? "Loading customers..." : "Select Customer"} />
-          </SelectTrigger>
-          <SelectContent>
-            {filteredCustomers.length > 0 ? (
-              filteredCustomers.map((customer) => (
-                <SelectItem key={customer.id} value={customer.id}>
-                  <div className="flex flex-col">
-                    <span className="font-medium">{customer.name}</span>
-                    <span className="text-xs text-muted-foreground">
-                      {customer.customer_id} • {customer.phone} • {customer.service_type}
-                    </span>
-                  </div>
-                </SelectItem>
-              ))
-            ) : (
-              <SelectItem value="no-customers" disabled>
-                {loading ? "Loading..." : "No customers found"}
-              </SelectItem>
-            )}
-          </SelectContent>
-        </Select>
-        
-        <button
-          type="button"
-          onClick={() => setShowSearch(!showSearch)}
-          className="px-3 py-2 border rounded-md hover:bg-muted transition-colors"
-          title="Search customers"
-        >
-          <Search className="h-4 w-4" />
-        </button>
-      </div>
+  const handleCustomerSelect = (customer: Customer) => {
+    setInputValue(customer.name);
+    setSearchTerm('');
+    setShowSuggestions(false);
+    onCustomerChange(customer.id, customer.name);
+  };
 
-      {showSearch && (
-        <Input
-          placeholder="Search by name, ID, or phone..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full"
-        />
+  const handleInputFocus = () => {
+    if (inputValue.length > 0) {
+      setSearchTerm(inputValue);
+      setShowSuggestions(true);
+    }
+  };
+
+  const handleInputBlur = () => {
+    // Delay hiding suggestions to allow for click selection
+    setTimeout(() => {
+      setShowSuggestions(false);
+    }, 200);
+  };
+
+  return (
+    <div className="relative space-y-2">
+      <Input
+        placeholder="Type customer name to search..."
+        value={inputValue}
+        onChange={(e) => handleInputChange(e.target.value)}
+        onFocus={handleInputFocus}
+        onBlur={handleInputBlur}
+        disabled={loading}
+        className="w-full"
+      />
+
+      {showSuggestions && filteredCustomers.length > 0 && (
+        <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-auto">
+          <Command>
+            <CommandList>
+              <CommandGroup>
+                {filteredCustomers.map((customer) => (
+                  <CommandItem
+                    key={customer.id}
+                    onSelect={() => handleCustomerSelect(customer)}
+                    className="cursor-pointer hover:bg-gray-100"
+                  >
+                    <Check
+                      className={cn(
+                        "mr-2 h-4 w-4",
+                        selectedCustomerId === customer.id ? "opacity-100" : "opacity-0"
+                      )}
+                    />
+                    <div className="flex flex-col">
+                      <span className="font-medium">{customer.name}</span>
+                      <span className="text-xs text-muted-foreground">
+                        {customer.customer_id} • {customer.phone} • {customer.service_type}
+                      </span>
+                    </div>
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+              {filteredCustomers.length === 0 && (
+                <CommandEmpty>
+                  {loading ? "Loading customers..." : "No customers found"}
+                </CommandEmpty>
+              )}
+            </CommandList>
+          </Command>
+        </div>
       )}
 
       {selectedCustomerName && (
