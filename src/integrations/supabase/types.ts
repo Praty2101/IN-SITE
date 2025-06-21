@@ -105,6 +105,36 @@ export type Database = {
         }
         Relationships: []
       }
+      siti_packs: {
+        Row: {
+          channel_count: number
+          created_at: string
+          customer_price: number
+          id: number
+          operator_price: number
+          pack_name: string
+          updated_at: string
+        }
+        Insert: {
+          channel_count: number
+          created_at?: string
+          customer_price: number
+          id?: number
+          operator_price: number
+          pack_name: string
+          updated_at?: string
+        }
+        Update: {
+          channel_count?: number
+          created_at?: string
+          customer_price?: number
+          id?: number
+          operator_price?: number
+          pack_name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
