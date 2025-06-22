@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
@@ -319,7 +320,85 @@ export const AnalyticsDashboard = () => {
         </Card>
       </div>
 
-      {/* Main Charts Grid */}
+      {/* Plan Performance Metrics */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Tv className="h-5 w-5" />
+            Plan Performance
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {planPopularityData.map((plan, index) => (
+              <div key={index} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                <div className="flex-1">
+                  <div className="font-medium">{plan.plan}</div>
+                  <div className="text-sm text-muted-foreground">
+                    {plan.count} customers • ₹{plan.revenue.toLocaleString()}
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Badge variant={plan.satisfaction >= 90 ? 'default' : 'secondary'}>
+                    {plan.satisfaction}% satisfaction
+                  </Badge>
+                  <Badge variant={plan.churn <= 1.5 ? 'default' : 'destructive'}>
+                    {plan.churn}% churn
+                  </Badge>
+                </div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Key Performance Indicators */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Zap className="h-5 w-5" />
+            Key Performance Indicators
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="text-center p-4 bg-muted/50 rounded-lg">
+              <div className="text-2xl font-bold text-green-600">{metrics.paymentSuccess}%</div>
+              <div className="text-sm text-muted-foreground">Payment Success</div>
+            </div>
+            <div className="text-center p-4 bg-muted/50 rounded-lg">
+              <div className="text-2xl font-bold text-blue-600">{metrics.retention}%</div>
+              <div className="text-sm text-muted-foreground">Retention Rate</div>
+            </div>
+            <div className="text-center p-4 bg-muted/50 rounded-lg">
+              <div className="text-2xl font-bold text-purple-600">{metrics.avgResolutionTime}h</div>
+              <div className="text-sm text-muted-foreground">Avg Resolution</div>
+            </div>
+            <div className="text-center p-4 bg-muted/50 rounded-lg">
+              <div className="text-2xl font-bold text-orange-600">{metrics.supportTickets}</div>
+              <div className="text-sm text-muted-foreground">Open Tickets</div>
+            </div>
+            <div className="text-center p-4 bg-muted/50 rounded-lg">
+              <div className="text-2xl font-bold text-indigo-600">{metrics.totalBandwidth} TB</div>
+              <div className="text-sm text-muted-foreground">Total Bandwidth</div>
+            </div>
+            <div className="text-center p-4 bg-muted/50 rounded-lg">
+              <div className="text-2xl font-bold text-teal-600">{metrics.peakHours}</div>
+              <div className="text-sm text-muted-foreground">Peak Hours</div>
+            </div>
+            <div className="text-center p-4 bg-muted/50 rounded-lg">
+              <div className="text-2xl font-bold text-rose-600">₹{avgDailyRevenue.toLocaleString()}</div>
+              <div className="text-sm text-muted-foreground">Daily Avg Revenue</div>
+            </div>
+            <div className="text-center p-4 bg-muted/50 rounded-lg">
+              <div className="text-2xl font-bold text-cyan-600">{metrics.newSignups}</div>
+              <div className="text-sm text-muted-foreground">New Signups</div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Main Charts Grid - Now at the end */}
       <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
         
         {/* Revenue Trends - Area Chart */}
@@ -455,84 +534,6 @@ export const AnalyticsDashboard = () => {
                 <Line type="monotone" dataKey="bandwidth" stroke="#10b981" strokeWidth={3} />
               </LineChart>
             </ChartContainer>
-          </CardContent>
-        </Card>
-
-        {/* Plan Performance Metrics */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Tv className="h-5 w-5" />
-              Plan Performance
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {planPopularityData.map((plan, index) => (
-                <div key={index} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
-                  <div className="flex-1">
-                    <div className="font-medium">{plan.plan}</div>
-                    <div className="text-sm text-muted-foreground">
-                      {plan.count} customers • ₹{plan.revenue.toLocaleString()}
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Badge variant={plan.satisfaction >= 90 ? 'default' : 'secondary'}>
-                      {plan.satisfaction}% satisfaction
-                    </Badge>
-                    <Badge variant={plan.churn <= 1.5 ? 'default' : 'destructive'}>
-                      {plan.churn}% churn
-                    </Badge>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Key Performance Indicators */}
-        <Card className="lg:col-span-2">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Zap className="h-5 w-5" />
-              Key Performance Indicators
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="text-center p-4 bg-muted/50 rounded-lg">
-                <div className="text-2xl font-bold text-green-600">{metrics.paymentSuccess}%</div>
-                <div className="text-sm text-muted-foreground">Payment Success</div>
-              </div>
-              <div className="text-center p-4 bg-muted/50 rounded-lg">
-                <div className="text-2xl font-bold text-blue-600">{metrics.retention}%</div>
-                <div className="text-sm text-muted-foreground">Retention Rate</div>
-              </div>
-              <div className="text-center p-4 bg-muted/50 rounded-lg">
-                <div className="text-2xl font-bold text-purple-600">{metrics.avgResolutionTime}h</div>
-                <div className="text-sm text-muted-foreground">Avg Resolution</div>
-              </div>
-              <div className="text-center p-4 bg-muted/50 rounded-lg">
-                <div className="text-2xl font-bold text-orange-600">{metrics.supportTickets}</div>
-                <div className="text-sm text-muted-foreground">Open Tickets</div>
-              </div>
-              <div className="text-center p-4 bg-muted/50 rounded-lg">
-                <div className="text-2xl font-bold text-indigo-600">{metrics.totalBandwidth} TB</div>
-                <div className="text-sm text-muted-foreground">Total Bandwidth</div>
-              </div>
-              <div className="text-center p-4 bg-muted/50 rounded-lg">
-                <div className="text-2xl font-bold text-teal-600">{metrics.peakHours}</div>
-                <div className="text-sm text-muted-foreground">Peak Hours</div>
-              </div>
-              <div className="text-center p-4 bg-muted/50 rounded-lg">
-                <div className="text-2xl font-bold text-rose-600">₹{avgDailyRevenue.toLocaleString()}</div>
-                <div className="text-sm text-muted-foreground">Daily Avg Revenue</div>
-              </div>
-              <div className="text-center p-4 bg-muted/50 rounded-lg">
-                <div className="text-2xl font-bold text-cyan-600">{metrics.newSignups}</div>
-                <div className="text-sm text-muted-foreground">New Signups</div>
-              </div>
-            </div>
           </CardContent>
         </Card>
 
