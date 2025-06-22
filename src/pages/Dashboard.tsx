@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { DashboardHeader } from '@/components/DashboardHeader';
 import { StatsCards } from '@/components/StatsCards';
@@ -12,12 +13,12 @@ const Dashboard = () => {
       <DashboardHeader />
       <div className="container mx-auto px-4 py-6 space-y-6">
         <StatsCards />
-        <AnalyticsDashboard />
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <RechargeTracker />
           <UpcomingPayments />
         </div>
         <UserManagement />
+        <AnalyticsDashboard />
       </div>
     </div>
   );
