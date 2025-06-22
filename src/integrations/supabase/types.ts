@@ -153,6 +153,36 @@ export type Database = {
         }
         Relationships: []
       }
+      gtpl_tv_packs: {
+        Row: {
+          channel_count: number
+          created_at: string
+          customer_price: number
+          id: number
+          operator_price: number
+          pack_name: string
+          updated_at: string
+        }
+        Insert: {
+          channel_count?: number
+          created_at?: string
+          customer_price: number
+          id?: number
+          operator_price: number
+          pack_name: string
+          updated_at?: string
+        }
+        Update: {
+          channel_count?: number
+          created_at?: string
+          customer_price?: number
+          id?: number
+          operator_price?: number
+          pack_name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       siti_packs: {
         Row: {
           channel_count: number

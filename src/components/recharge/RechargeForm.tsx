@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -54,8 +53,8 @@ export const RechargeForm: React.FC<RechargeFormProps> = ({ onAddRecharge }) => 
     let operatorPrice: number | undefined;
     let packName = '';
     
-    if (newRecharge.company === 'SITI' && newRecharge.service === 'TV' && newRecharge.selectedPack) {
-      // For SITI TV packs, always use customer price as the main amount
+    if ((newRecharge.company === 'SITI' || newRecharge.company === 'GTPL') && newRecharge.service === 'TV' && newRecharge.selectedPack) {
+      // For SITI and GTPL TV packs, always use customer price as the main amount
       customerPrice = newRecharge.selectedPack.customerPrice ?? newRecharge.selectedPack.operatorPrice;
       operatorPrice = newRecharge.selectedPack.operatorPrice;
       amount = customerPrice; // Customer pays the customer price
@@ -64,7 +63,7 @@ export const RechargeForm: React.FC<RechargeFormProps> = ({ onAddRecharge }) => 
       // For other services, use the manually entered amount
       amount = Number(newRecharge.amount) || 0;
       packName = newRecharge.pack || 'Standard';
-      // For non-SITI services, the amount is both customer and operator price
+      // For non-TV services, the amount is both customer and operator price
       customerPrice = amount;
       operatorPrice = amount;
     }
@@ -135,7 +134,7 @@ export const RechargeForm: React.FC<RechargeFormProps> = ({ onAddRecharge }) => 
     });
   };
 
-  const shouldShowAmountInput = !(newRecharge.company === 'SITI' && newRecharge.service === 'TV' && newRecharge.selectedPack);
+  const shouldShowAmountInput = !((newRecharge.company === 'SITI' || newRecharge.company === 'GTPL') && newRecharge.service === 'TV' && newRecharge.selectedPack);
 
   return (
     <div className="space-y-4">
