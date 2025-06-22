@@ -9,6 +9,42 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      alliance_plans: {
+        Row: {
+          base_price: number
+          created_at: string
+          id: number
+          ott_apps_included: string | null
+          plan_name: string
+          price_with_gst: number
+          speed: string
+          updated_at: string
+          validity_days: number
+        }
+        Insert: {
+          base_price: number
+          created_at?: string
+          id?: number
+          ott_apps_included?: string | null
+          plan_name: string
+          price_with_gst: number
+          speed: string
+          updated_at?: string
+          validity_days: number
+        }
+        Update: {
+          base_price?: number
+          created_at?: string
+          id?: number
+          ott_apps_included?: string | null
+          plan_name?: string
+          price_with_gst?: number
+          speed?: string
+          updated_at?: string
+          validity_days?: number
+        }
+        Relationships: []
+      }
       customers: {
         Row: {
           address: string
@@ -78,30 +114,6 @@ export type Database = {
           status?: string
           total_paid?: number | null
           updated_at?: string
-        }
-        Relationships: []
-      }
-      SITI: {
-        Row: {
-          actual_price: number | null
-          channel_count: number | null
-          deductible_amount: number | null
-          pack_id: number
-          pack_name: string | null
-        }
-        Insert: {
-          actual_price?: number | null
-          channel_count?: number | null
-          deductible_amount?: number | null
-          pack_id: number
-          pack_name?: string | null
-        }
-        Update: {
-          actual_price?: number | null
-          channel_count?: number | null
-          deductible_amount?: number | null
-          pack_id?: number
-          pack_name?: string | null
         }
         Relationships: []
       }

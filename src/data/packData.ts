@@ -1,5 +1,6 @@
 
 import { useSitiPacks } from '@/hooks/useSitiPacks';
+import { useAlliancePlans } from '@/hooks/useAlliancePlans';
 
 export interface Pack {
   label: string;
@@ -16,13 +17,6 @@ export const GTPL_TV_PACKS: Pack[] = [
   { label: "GTPL HD Package", value: "GTPL-HD", channelCount: 120, operatorPrice: 350.00, customerPrice: 450.00 }
 ];
 
-// Alliance Broadband plans (placeholder - can be expanded)
-export const ALLIANCE_BROADBAND_PLANS: Pack[] = [
-  { label: "Alliance 50 Mbps", value: "ALLIANCE-50", channelCount: 0, operatorPrice: 600.00, customerPrice: 750.00 },
-  { label: "Alliance 100 Mbps", value: "ALLIANCE-100", channelCount: 0, operatorPrice: 900.00, customerPrice: 1000.00 },
-  { label: "Alliance 200 Mbps", value: "ALLIANCE-200", channelCount: 0, operatorPrice: 1200.00, customerPrice: 1500.00 }
-];
-
 // GTPL Broadband plans (placeholder - can be expanded)
 export const GTPL_BROADBAND_PLANS: Pack[] = [
   { label: "GTPL 25 Mbps", value: "GTPL-25", channelCount: 0, operatorPrice: 500.00, customerPrice: 600.00 },
@@ -30,7 +24,7 @@ export const GTPL_BROADBAND_PLANS: Pack[] = [
   { label: "GTPL 100 Mbps", value: "GTPL-100", channelCount: 0, operatorPrice: 1000.00, customerPrice: 1200.00 }
 ];
 
-export const getPacksForService = (service: string, company: string, sitiPacks?: Pack[]): Pack[] => {
+export const getPacksForService = (service: string, company: string, sitiPacks?: Pack[], alliancePlans?: Pack[]): Pack[] => {
   if (service === "TV") {
     switch (company) {
       case "SITI":
@@ -43,7 +37,7 @@ export const getPacksForService = (service: string, company: string, sitiPacks?:
   } else if (service === "Internet") {
     switch (company) {
       case "Alliance":
-        return ALLIANCE_BROADBAND_PLANS;
+        return alliancePlans || [];
       case "GTPL":
         return GTPL_BROADBAND_PLANS;
       default:
