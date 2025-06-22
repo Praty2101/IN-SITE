@@ -17,14 +17,7 @@ export const GTPL_TV_PACKS: Pack[] = [
   { label: "GTPL HD Package", value: "GTPL-HD", channelCount: 120, operatorPrice: 350.00, customerPrice: 450.00 }
 ];
 
-// GTPL Broadband plans (placeholder - can be expanded)
-export const GTPL_BROADBAND_PLANS: Pack[] = [
-  { label: "GTPL 25 Mbps", value: "GTPL-25", channelCount: 0, operatorPrice: 500.00, customerPrice: 600.00 },
-  { label: "GTPL 50 Mbps", value: "GTPL-50", channelCount: 0, operatorPrice: 700.00, customerPrice: 850.00 },
-  { label: "GTPL 100 Mbps", value: "GTPL-100", channelCount: 0, operatorPrice: 1000.00, customerPrice: 1200.00 }
-];
-
-export const getPacksForService = (service: string, company: string, sitiPacks?: Pack[], alliancePlans?: Pack[]): Pack[] => {
+export const getPacksForService = (service: string, company: string, sitiPacks?: Pack[], alliancePlans?: Pack[], gtplBroadbandPlans?: Pack[]): Pack[] => {
   if (service === "TV") {
     switch (company) {
       case "SITI":
@@ -39,7 +32,7 @@ export const getPacksForService = (service: string, company: string, sitiPacks?:
       case "Alliance":
         return alliancePlans || [];
       case "GTPL":
-        return GTPL_BROADBAND_PLANS;
+        return gtplBroadbandPlans || [];
       default:
         return [];
     }

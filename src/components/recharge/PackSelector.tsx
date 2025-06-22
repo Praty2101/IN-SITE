@@ -5,6 +5,7 @@ import { PackComboBox, Pack } from '@/components/PackComboBox';
 import { getPacksForService } from '@/data/packData';
 import { useSitiPacks } from '@/hooks/useSitiPacks';
 import { useAlliancePlans } from '@/hooks/useAlliancePlans';
+import { useGtplBroadbandPlans } from '@/hooks/useGtplBroadbandPlans';
 
 interface PackSelectorProps {
   service: string;
@@ -25,16 +26,29 @@ export const PackSelector: React.FC<PackSelectorProps> = ({
 }) => {
   const { packs: sitiPacks, loading: sitiLoading } = useSitiPacks();
   const { plans: alliancePlans, loading: allianceLoading } = useAlliancePlans();
+  const { plans: gtplBroadbandPlans, loading: gtplBroadbandLoading } = useGtplBroadbandPlans();
   
-  const shouldShowComboBox = (service === "TV" && company === "SITI") || (service === "Internet" && company === "Alliance");
-  const availablePacks = getPacksForService(service, company, sitiPacks, alliancePlans);
+  const shouldShowComboBox = (service === "TV" && company === "SITI") || 
+                             (service === "Internet" && company === "Alliance") ||
+                             (service === "Internet" && company === "GTPL");
+  
+  const availablePacks = getPacksForService(service, company, sitiPacks, alliancePlans, gtplBroadbandPlans);
 
   if (shouldShowComboBox) {
     const isLoading = (service === "TV" && company === "SITI" && sitiLoading) || 
-                     (service === "Internet" && company === "Alliance" && allianceLoading);
+                     (service === "Internet" && company === "Alliance" && allianceLoading) ||
+                     (service === "Internet" && company === "GTPL" && gtplBroadbandLoading);
     
     if (isLoading) {
-      const loadingText = service === "TV" ? "Loading SITI packs..." : "Loading Alliance plans...";
+      let loadingText = "Loading packs...";
+      if (service === "TV" && company === "SITI") {
+        loadingText = "Loading SITI packs...";
+      } else if (service === "Internet" && company === "Alliance") {
+        loadingText = "Loading Alliance plans...";
+      } else if (service === "Internet" && company === "GTPL") {
+        loadingText = "Loading GTPL broadband plans...";
+      }
+      
       return (
         <div className="flex items-center justify-center p-4">
           <div className="text-sm text-muted-foreground">{loadingText}</div>
@@ -42,9 +56,14 @@ export const PackSelector: React.FC<PackSelectorProps> = ({
       );
     }
 
-    const placeholder = service === "TV" 
-      ? "Search or choose SITI pack..." 
-      : "Search or choose Alliance plan...";
+    let placeholder = "Search or choose pack...";
+    if (service === "TV" && company === "SITI") {
+      placeholder = "Search or choose SITI pack...";
+    } else if (service === "Internet" && company === "Alliance") {
+      placeholder = "Search or choose Alliance plan...";
+    } else if (service === "Internet" && company === "GTPL") {
+      placeholder = "Search or choose GTPL broadband plan...";
+    }
 
     return (
       <PackComboBox

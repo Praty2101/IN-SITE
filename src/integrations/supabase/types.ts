@@ -117,6 +117,42 @@ export type Database = {
         }
         Relationships: []
       }
+      gtpl_broadband_plans: {
+        Row: {
+          base_price: number
+          created_at: string
+          id: number
+          ott_apps_included: string | null
+          plan_name: string
+          price_with_gst: number
+          speed: string
+          updated_at: string
+          validity_days: number
+        }
+        Insert: {
+          base_price: number
+          created_at?: string
+          id?: number
+          ott_apps_included?: string | null
+          plan_name: string
+          price_with_gst: number
+          speed: string
+          updated_at?: string
+          validity_days: number
+        }
+        Update: {
+          base_price?: number
+          created_at?: string
+          id?: number
+          ott_apps_included?: string | null
+          plan_name?: string
+          price_with_gst?: number
+          speed?: string
+          updated_at?: string
+          validity_days?: number
+        }
+        Relationships: []
+      }
       siti_packs: {
         Row: {
           channel_count: number
