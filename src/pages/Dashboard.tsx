@@ -11,11 +11,15 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-background">
       <DashboardHeader />
-      <div className="container mx-auto px-4 py-6 space-y-6">
+      <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4 sm:space-y-6">
         <StatsCards />
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <RechargeTracker />
-          <UpcomingPayments />
+        <div className="space-y-4 lg:space-y-0 lg:grid lg:grid-cols-2 lg:gap-6">
+          <div className="order-1">
+            <RechargeTracker />
+          </div>
+          <div className="order-2">
+            <UpcomingPayments />
+          </div>
         </div>
         <UserManagement />
         <AnalyticsDashboard />

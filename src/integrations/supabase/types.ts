@@ -117,6 +117,45 @@ export type Database = {
         }
         Relationships: []
       }
+      ghosh: {
+        Row: {
+          Cashier: string | null
+          CustomerId: number | null
+          CustomerName: string | null
+          Description: string | null
+          OrderDate: string | null
+          OrderId: string
+          Package: string | null
+          PackageAmount: number | null
+          TaxAmount: number | null
+          TotalAmount: number | null
+        }
+        Insert: {
+          Cashier?: string | null
+          CustomerId?: number | null
+          CustomerName?: string | null
+          Description?: string | null
+          OrderDate?: string | null
+          OrderId: string
+          Package?: string | null
+          PackageAmount?: number | null
+          TaxAmount?: number | null
+          TotalAmount?: number | null
+        }
+        Update: {
+          Cashier?: string | null
+          CustomerId?: number | null
+          CustomerName?: string | null
+          Description?: string | null
+          OrderDate?: string | null
+          OrderId?: string
+          Package?: string | null
+          PackageAmount?: number | null
+          TaxAmount?: number | null
+          TotalAmount?: number | null
+        }
+        Relationships: []
+      }
       gtpl_broadband_plans: {
         Row: {
           base_price: number

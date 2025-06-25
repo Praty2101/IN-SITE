@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -138,15 +139,17 @@ export const RechargeForm: React.FC<RechargeFormProps> = ({ onAddRecharge }) => 
 
   return (
     <div className="space-y-4">
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-        <CustomerSelector
-          selectedCustomerId={newRecharge.customerId}
-          selectedCustomerName={newRecharge.customer}
-          onCustomerChange={handleCustomerChange}
-        />
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-2">
+        <div className="sm:col-span-2">
+          <CustomerSelector
+            selectedCustomerId={newRecharge.customerId}
+            selectedCustomerName={newRecharge.customer}
+            onCustomerChange={handleCustomerChange}
+          />
+        </div>
         
         <Select value={newRecharge.service} onValueChange={handleServiceChange}>
-          <SelectTrigger>
+          <SelectTrigger className="h-11 sm:h-10">
             <SelectValue placeholder="Service Type" />
           </SelectTrigger>
           <SelectContent>
@@ -161,32 +164,39 @@ export const RechargeForm: React.FC<RechargeFormProps> = ({ onAddRecharge }) => 
           onCompanyChange={handleCompanyChange}
         />
         
-        <PackSelector
-          service={newRecharge.service}
-          company={newRecharge.company}
-          selectedPack={newRecharge.selectedPack}
-          packName={newRecharge.pack}
-          onPackChange={handlePackChange}
-          onPackNameChange={handlePackNameChange}
-        />
+        <div className="sm:col-span-2">
+          <PackSelector
+            service={newRecharge.service}
+            company={newRecharge.company}
+            selectedPack={newRecharge.selectedPack}
+            packName={newRecharge.pack}
+            onPackChange={handlePackChange}
+            onPackNameChange={handlePackNameChange}
+          />
+        </div>
         
         {shouldShowAmountInput && (
-          <Input
-            placeholder="Customer Price"
-            type="number"
-            value={newRecharge.amount || ''}
-            onChange={(e) => setNewRecharge({ ...newRecharge, amount: Number(e.target.value) })}
-          />
+          <div className="sm:col-span-2">
+            <Input
+              placeholder="Customer Price"
+              type="number"
+              value={newRecharge.amount || ''}
+              onChange={(e) => setNewRecharge({ ...newRecharge, amount: Number(e.target.value) })}
+              className="h-11 sm:h-10"
+            />
+          </div>
         )}
 
-        <SelectedPackDisplay
-          service={newRecharge.service}
-          company={newRecharge.company}
-          selectedPack={newRecharge.selectedPack}
-        />
+        <div className="sm:col-span-2">
+          <SelectedPackDisplay
+            service={newRecharge.service}
+            company={newRecharge.company}
+            selectedPack={newRecharge.selectedPack}
+          />
+        </div>
       </div>
       
-      <Button onClick={handleAddRecharge} className="w-full">
+      <Button onClick={handleAddRecharge} className="w-full h-11 sm:h-10 text-base font-medium">
         Add Recharge
       </Button>
     </div>
