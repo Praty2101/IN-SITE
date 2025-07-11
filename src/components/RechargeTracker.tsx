@@ -22,44 +22,7 @@ interface Recharge {
 
 export const RechargeTracker = () => {
   const { toast } = useToast();
-  const [recharges, setRecharges] = useState<Recharge[]>([
-    {
-      id: 1,
-      customer: 'John Doe',
-      service: 'TV',
-      pack: 'Premium Sports',
-      amount: 599,
-      customerPrice: 599,
-      operatorPrice: 508,
-      time: '09:30 AM',
-      date: '2024-06-13',
-      status: 'completed'
-    },
-    {
-      id: 2,
-      customer: 'Jane Smith',
-      service: 'Internet',
-      pack: '100 Mbps',
-      amount: 899,
-      customerPrice: 899,
-      operatorPrice: 899,
-      time: '10:15 AM',
-      date: '2024-06-13',
-      status: 'completed'
-    },
-    {
-      id: 3,
-      customer: 'Mike Johnson',
-      service: 'TV',
-      pack: 'Basic Package',
-      amount: 299,
-      customerPrice: 299,
-      operatorPrice: 254,
-      time: '11:00 AM',
-      date: '2024-06-13',
-      status: 'pending'
-    }
-  ]);
+  const [recharges, setRecharges] = useState<Recharge[]>([]);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [serviceFilter, setServiceFilter] = useState('all');

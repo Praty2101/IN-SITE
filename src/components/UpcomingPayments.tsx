@@ -21,13 +21,7 @@ interface Payment {
 
 export const UpcomingPayments = () => {
   const { toast } = useToast();
-  const [payments, setPayments] = useState<Payment[]>([
-    { id: 1, customer: 'Alice Brown', service: 'TV', amount: 499, dueDate: '2024-06-15', daysLeft: 2, status: 'pending', contactInfo: '+91 9876543210' },
-    { id: 2, customer: 'Bob Wilson', service: 'Internet', amount: 799, dueDate: '2024-06-16', daysLeft: 3, status: 'pending', contactInfo: '+91 9876543211' },
-    { id: 3, customer: 'Carol Davis', service: 'TV', amount: 399, dueDate: '2024-06-17', daysLeft: 4, status: 'reminded', contactInfo: '+91 9876543212' },
-    { id: 4, customer: 'David Miller', service: 'Internet', amount: 1099, dueDate: '2024-06-18', daysLeft: 5, status: 'pending', contactInfo: '+91 9876543213' },
-    { id: 5, customer: 'Eva Garcia', service: 'TV', amount: 299, dueDate: '2024-06-12', daysLeft: -1, status: 'overdue', contactInfo: '+91 9876543214' }
-  ]);
+  const [payments, setPayments] = useState<Payment[]>([]);
 
   const [filterStatus, setFilterStatus] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');

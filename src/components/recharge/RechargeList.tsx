@@ -32,7 +32,8 @@ export const RechargeList: React.FC<RechargeListProps> = ({
   if (recharges.length === 0) {
     return (
       <div className="text-center py-8 text-muted-foreground">
-        <p className="text-sm sm:text-base">No recharges found matching your criteria.</p>
+        <div className="text-lg font-medium">No recharges recorded yet</div>
+        <div className="text-sm mt-1">Add your first recharge using the form above</div>
       </div>
     );
   }
