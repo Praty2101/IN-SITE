@@ -1,4 +1,4 @@
-
+@@ .. @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
@@ -40,17 +40,19 @@ export const RechargeTracker = () => {
   const fetchRecharges = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
+      
+      // Fetch recharges from the recharges table
+      const { data: rechargeData, error: rechargeError } = await supabase
         .from('recharges')
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (error) {
-        throw error;
+      if (rechargeError) {
+        throw rechargeError;
       }
 
       // Transform database records to component format
-      const transformedRecharges = (data || []).map((record: any) => ({
+      const transformedRecharges = (rechargeData || []).map((record: any) => ({
         id: record.id,
         customer: record.customer_name,
         service: record.service_type,
@@ -63,7 +65,10 @@ export const RechargeTracker = () => {
           minute: '2-digit' 
         }),
         date: record.transaction_date,
-        status: record.status
+        status: record.status,
+        customerId: record.customer_source_id,
+        serviceType: record.service_type,
+        company: record.company
       }));
 
       setRecharges(transformedRecharges);
@@ -95,7 +100,11 @@ export const RechargeTracker = () => {
         .insert({
           customer_name: newRechargeData.customer,
           customer_source_id: newRechargeData.customerId || 'manual_entry',
-          customer_source_table: 'manual',
+          customer_source_table: newRechargeData.customerId ? 
+            (newRechargeData.customerId.startsWith('jc_') ? 'JC' :
+             newRechargeData.customerId.startsWith('bc_') ? 'BC' :
+             newRechargeData.customerId.startsWith('gb_') ? 'GB' :
+             newRechargeData.customerId.startsWith('mb_') ? 'MB' : 'manual') : 'manual',
           service_type: newRechargeData.service,
           company: newRechargeData.company || 'Unknown',
           pack_name: newRechargeData.pack,

@@ -1,4 +1,4 @@
-
+@@ .. @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -18,6 +18,9 @@ interface Payment {
   daysLeft: number;
   status: 'pending' | 'reminded' | 'paid' | 'overdue';
   contactInfo?: string;
+  customerId?: string;
+  packageName?: string;
+  sourceTable?: string;
 }
 
 export const UpcomingPayments = () => {
@@ -58,12 +61,15 @@ export const UpcomingPayments = () => {
             return {
               id: paymentId++,
               customer: customer.NAME.trim(),
-              service: 'TV',
+              service: 'Cable TV (JC)',
               amount: 299, // Default amount, you might want to calculate from package
               dueDate,
               daysLeft,
               status: getPaymentStatus(daysLeft),
-              contactInfo: customer.MOBILE_PHONE?.toString() || 'N/A'
+              contactInfo: customer.MOBILE_PHONE?.toString() || 'N/A',
+              customerId: `jc_${customer["VC No."] || customer.CONTRACT_NUMBER}`,
+              packageName: customer.PACKAGE_NAME || 'Standard Package',
+              sourceTable: 'JC'
             };
           });
         allPayments = [...allPayments, ...jcPayments];
@@ -80,12 +86,15 @@ export const UpcomingPayments = () => {
             return {
               id: paymentId++,
               customer: customer.NAME.trim(),
-              service: 'TV',
+              service: 'Cable TV (BC)',
               amount: 299, // Default amount
               dueDate,
               daysLeft,
               status: getPaymentStatus(daysLeft),
-              contactInfo: customer.MOBILE_PHONE?.toString() || 'N/A'
+              contactInfo: customer.MOBILE_PHONE?.toString() || 'N/A',
+              customerId: `bc_${customer["VC No."] || customer.CONTRACT_NUMBER}`,
+              packageName: customer.PACKAGE_NAME || 'Standard Package',
+              sourceTable: 'BC'
             };
           });
         allPayments = [...allPayments, ...bcPayments];
@@ -102,12 +111,15 @@ export const UpcomingPayments = () => {
             return {
               id: paymentId++,
               customer: customer.CustomerName.trim(),
-              service: 'Internet',
-              amount: 599, // Default broadband amount
+              service: 'Broadband (GB)',
+              amount: customer.PackageAmount || 599, // Use actual package amount
               dueDate,
               daysLeft,
               status: getPaymentStatus(daysLeft),
-              contactInfo: 'N/A'
+              contactInfo: 'N/A',
+              customerId: `gb_${customer.CustomerId}`,
+              packageName: customer.Package || 'Standard Package',
+              sourceTable: 'GB'
             };
           });
         allPayments = [...allPayments, ...gbPayments];
@@ -124,12 +136,15 @@ export const UpcomingPayments = () => {
             return {
               id: paymentId++,
               customer: customer.CustomerName.trim(),
-              service: 'Internet',
-              amount: 599, // Default broadband amount
+              service: 'Broadband (MB)',
+              amount: customer.PackageAmount || 599, // Use actual package amount
               dueDate,
               daysLeft,
               status: getPaymentStatus(daysLeft),
-              contactInfo: 'N/A'
+              contactInfo: 'N/A',
+              customerId: `mb_${customer.CustomerId}`,
+              packageName: customer.Package || 'Standard Package',
+              sourceTable: 'MB'
             };
           });
         allPayments = [...allPayments, ...mbPayments];
@@ -169,7 +184,8 @@ export const UpcomingPayments = () => {
   };
 
   const filteredPayments = payments.filter(payment => {
-    const matchesSearch = payment.customer.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = payment.customer.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         (payment.packageName && payment.packageName.toLowerCase().includes(searchTerm.toLowerCase()));
     const matchesStatus = filterStatus === 'all' || payment.status === filterStatus;
     return matchesSearch && matchesStatus;
   });
@@ -271,7 +287,7 @@ export const UpcomingPayments = () => {
           <div>
             <CardTitle className="flex items-center gap-2">
               <Calendar className="h-5 w-5" />
-              Upcoming Payments
+              Upcoming Payments ({payments.length} customers)
             </CardTitle>
             <div className="grid grid-cols-3 gap-4 mt-2">
               <div className="text-center">
@@ -294,7 +310,7 @@ export const UpcomingPayments = () => {
         {/* Filters and Search */}
         <div className="flex flex-col sm:flex-row gap-2">
           <Input
-            placeholder="Search customers..."
+            placeholder="Search customers or packages..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="flex-1"
@@ -353,14 +369,17 @@ export const UpcomingPayments = () => {
                 </div>
                 <div className="text-sm text-muted-foreground">
                   Due: {new Date(payment.dueDate).toLocaleDateString()}
-                  {payment.contactInfo && (
+                  {payment.contactInfo && payment.contactInfo !== 'N/A' && (
                     <span className="ml-2">• {payment.contactInfo}</span>
                   )}
                 </div>
+                <div className="text-xs text-muted-foreground">
+                  {payment.packageName} • {payment.sourceTable}
+                </div>
               </div>
               <div className="flex items-center gap-2">
-                <Badge variant={payment.service === 'TV' ? 'default' : 'secondary'}>
-                  {payment.service}
+                <Badge variant={payment.service.includes('TV') ? 'default' : 'secondary'}>
+                  {payment.service.includes('TV') ? 'Cable TV' : 'Broadband'}
                 </Badge>
                 <Badge variant={getPriorityColor(payment.daysLeft, payment.status)}>
                   {payment.status === 'paid' ? 'Paid' :

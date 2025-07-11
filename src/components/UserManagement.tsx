@@ -1,4 +1,4 @@
-
+@@ .. @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -20,6 +20,8 @@ interface Customer {
   service_type: string;
   package_name: string;
   status: string;
+  source_table: string;
+  package_amount?: number;
 }
 
 export const UserManagement = () => {
@@ -61,7 +63,8 @@ export const UserManagement = () => {
           address: [customer.ADDRESS1, customer.ADDRESS2, customer.ADDRESS3].filter(Boolean).join(', '),
           city: customer.CITY || 'N/A',
           package_name: customer.PACKAGE_NAME || 'Standard Package',
-          status: customer.STATUS === 'ACTIVE' ? 'Active' : customer.STATUS || 'Unknown'
+          status: customer.STATUS === 'ACTIVE' ? 'Active' : customer.STATUS || 'Unknown',
+          source_table: 'JC'
         }));
 
       // Process BC customers
@@ -77,7 +80,8 @@ export const UserManagement = () => {
           address: [customer.ADDRESS1, customer.ADDRESS2, customer.ADDRESS3].filter(Boolean).join(', '),
           city: customer.CITY || 'N/A',
           package_name: customer.PACKAGE_NAME || 'Standard Package',
-          status: customer.STATUS === 'ACTIVE' ? 'Active' : customer.STATUS || 'Unknown'
+          status: customer.STATUS === 'ACTIVE' ? 'Active' : customer.STATUS || 'Unknown',
+          source_table: 'BC'
         }));
 
       // Process GB customers
@@ -93,7 +97,9 @@ export const UserManagement = () => {
           address: 'N/A',
           city: 'N/A',
           package_name: customer.Package || 'Standard Package',
-          status: 'Active'
+          status: 'Active',
+          source_table: 'GB',
+          package_amount: customer.PackageAmount || undefined
         }));
 
       // Process MB customers
@@ -109,7 +115,9 @@ export const UserManagement = () => {
           address: 'N/A',
           city: 'N/A',
           package_name: customer.Package || 'Standard Package',
-          status: 'Active'
+          status: 'Active',
+          source_table: 'MB',
+          package_amount: customer.PackageAmount || undefined
         }));
 
       allCustomers = [...jcCustomers, ...bcCustomers, ...gbCustomers, ...mbCustomers];
@@ -148,6 +156,8 @@ export const UserManagement = () => {
 
   const totalCustomers = filteredCustomers.length;
   const activeCustomers = filteredCustomers.filter(c => c.status === 'Active').length;
+  const cableTvCustomers = filteredCustomers.filter(c => c.service_type.includes('TV')).length;
+  const broadbandCustomers = filteredCustomers.filter(c => c.service_type.includes('Broadband')).length;
 
   // Get unique cities for filter (excluding 'N/A')
   const uniqueCities = [...new Set(customers.map(c => c.city))].filter(city => city && city !== 'N/A').sort();
@@ -166,6 +176,35 @@ export const UserManagement = () => {
     if (service.includes('TV')) return 'outline';
     if (service.includes('Broadband')) return 'secondary';
     return 'default';
+  };
+
+  const exportCustomers = () => {
+    const csvContent = [
+      ['Name', 'Customer ID', 'Service', 'Package', 'Phone', 'Email', 'City', 'Status', 'Source'].join(','),
+      ...filteredCustomers.map(customer => [
+        customer.name,
+        customer.customer_id,
+        customer.service_type,
+        customer.package_name,
+        customer.phone,
+        customer.email || '',
+        customer.city,
+        customer.status,
+        customer.source_table
+      ].join(','))
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `customers-${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    
+    toast({
+      title: "Export Complete",
+      description: `Exported ${filteredCustomers.length} customer records.`,
+    });
   };
 
   if (loading) {
@@ -188,7 +227,7 @@ export const UserManagement = () => {
               <Plus className="h-4 w-4 mr-2" />
               Add Customer
             </Button>
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" onClick={exportCustomers}>
               <Download className="h-4 w-4 mr-2" />
               Export
             </Button>
@@ -196,7 +235,7 @@ export const UserManagement = () => {
         </div>
         
         {/* Summary Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4">
           <div className="bg-muted/50 p-3 rounded-lg">
             <div className="text-sm text-muted-foreground">Total Customers</div>
             <div className="text-xl font-bold">{totalCustomers}</div>
@@ -210,11 +249,14 @@ export const UserManagement = () => {
             </div>
           </div>
           <div className="bg-muted/50 p-3 rounded-lg">
-            <div className="text-sm text-muted-foreground">Service Distribution</div>
-            <div className="text-sm">
-              <div>TV: {filteredCustomers.filter(c => c.service_type.includes('TV')).length}</div>
-              <div>Broadband: {filteredCustomers.filter(c => c.service_type.includes('Broadband')).length}</div>
-            </div>
+            <div className="text-sm text-muted-foreground">Cable TV</div>
+            <div className="text-xl font-bold text-blue-600">{cableTvCustomers}</div>
+            <div className="text-xs text-muted-foreground">JC + BC customers</div>
+          </div>
+          <div className="bg-muted/50 p-3 rounded-lg">
+            <div className="text-sm text-muted-foreground">Broadband</div>
+            <div className="text-xl font-bold text-purple-600">{broadbandCustomers}</div>
+            <div className="text-xs text-muted-foreground">GB + MB customers</div>
           </div>
         </div>
 
@@ -306,10 +348,18 @@ export const UserManagement = () => {
                     <Badge variant={getServiceColor(customer.service_type)}>
                       {customer.service_type}
                     </Badge>
+                    <Badge variant="outline">
+                      {customer.source_table}
+                    </Badge>
                   </div>
                   <div className="text-sm">
                     <span className="text-muted-foreground">Package:</span> {customer.package_name}
                   </div>
+                  {customer.package_amount && (
+                    <div className="text-sm">
+                      <span className="text-muted-foreground">Amount:</span> ₹{customer.package_amount}
+                    </div>
+                  )}
                   <div className="text-sm">
                     <span className="text-muted-foreground">Customer ID:</span> {customer.customer_id}
                   </div>
