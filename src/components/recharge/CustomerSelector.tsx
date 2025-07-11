@@ -13,6 +13,9 @@ interface Customer {
   name: string;
   phone: string;
   service_type: string;
+  address?: string;
+  city?: string;
+  package_name?: string;
 }
 
 interface CustomerSelectorProps {
@@ -54,56 +57,87 @@ export const CustomerSelector: React.FC<CustomerSelectorProps> = ({
 
       if (serviceType === 'TV') {
         // Fetch from JC and BC tables for Cable TV
-        const [jcData, bcData] = await Promise.all([
-          supabase.from('JC').select('*'),
-          supabase.from('BC').select('*')
+        const [jcResponse, bcResponse] = await Promise.all([
+          supabase.from('JC').select('*').not('NAME', 'is', null),
+          supabase.from('BC').select('*').not('NAME', 'is', null)
         ]);
 
-        const jcCustomers = (jcData.data || []).map((customer: any) => ({
-          id: customer["VC No."]?.toString() || customer.CONTRACT_NUMBER?.toString() || Math.random().toString(),
-          customer_id: customer["VC No."]?.toString() || customer.CONTRACT_NUMBER?.toString() || 'N/A',
-          name: customer.NAME || 'Unknown',
-          phone: customer.MOBILE_PHONE?.toString() || 'N/A',
-          service_type: 'Cable TV (JC)'
-        }));
+        if (jcResponse.error) console.error('JC fetch error:', jcResponse.error);
+        if (bcResponse.error) console.error('BC fetch error:', bcResponse.error);
 
-        const bcCustomers = (bcData.data || []).map((customer: any) => ({
-          id: customer["VC No."]?.toString() || customer.CONTRACT_NUMBER?.toString() || Math.random().toString(),
-          customer_id: customer["VC No."]?.toString() || customer.CONTRACT_NUMBER?.toString() || 'N/A',
-          name: customer.NAME || 'Unknown',
-          phone: customer.MOBILE_PHONE?.toString() || 'N/A',
-          service_type: 'Cable TV (BC)'
-        }));
+        const jcCustomers = (jcResponse.data || [])
+          .filter((customer: any) => customer.NAME && customer.NAME.trim() !== '')
+          .map((customer: any) => ({
+            id: `jc_${customer["VC No."] || customer.CONTRACT_NUMBER || Math.random()}`,
+            customer_id: customer["VC No."]?.toString() || customer.CONTRACT_NUMBER?.toString() || 'N/A',
+            name: customer.NAME.trim(),
+            phone: customer.MOBILE_PHONE?.toString() || 'N/A',
+            service_type: 'Cable TV (JC)',
+            address: [customer.ADDRESS1, customer.ADDRESS2, customer.ADDRESS3].filter(Boolean).join(', '),
+            city: customer.CITY || 'N/A',
+            package_name: customer.PACKAGE_NAME || 'N/A'
+          }));
 
-        data = [...jcCustomers, ...bcCustomers].filter(c => c.name !== 'Unknown');
+        const bcCustomers = (bcResponse.data || [])
+          .filter((customer: any) => customer.NAME && customer.NAME.trim() !== '')
+          .map((customer: any) => ({
+            id: `bc_${customer["VC No."] || customer.CONTRACT_NUMBER || Math.random()}`,
+            customer_id: customer["VC No."]?.toString() || customer.CONTRACT_NUMBER?.toString() || 'N/A',
+            name: customer.NAME.trim(),
+            phone: customer.MOBILE_PHONE?.toString() || 'N/A',
+            service_type: 'Cable TV (BC)',
+            address: [customer.ADDRESS1, customer.ADDRESS2, customer.ADDRESS3].filter(Boolean).join(', '),
+            city: customer.CITY || 'N/A',
+            package_name: customer.PACKAGE_NAME || 'N/A'
+          }));
+
+        data = [...jcCustomers, ...bcCustomers];
 
       } else if (serviceType === 'Internet') {
         // Fetch from GB and MB tables for Broadband
-        const [gbData, mbData] = await Promise.all([
-          supabase.from('GB').select('*'),
-          supabase.from('MB').select('*')
+        const [gbResponse, mbResponse] = await Promise.all([
+          supabase.from('GB').select('*').not('CustomerName', 'is', null),
+          supabase.from('MB').select('*').not('CustomerName', 'is', null)
         ]);
 
-        const gbCustomers = (gbData.data || []).map((customer: any) => ({
-          id: customer.CustomerId?.toString() || Math.random().toString(),
-          customer_id: customer.CustomerId?.toString() || 'N/A',
-          name: customer.CustomerName || 'Unknown',
-          phone: 'N/A',
-          service_type: 'Broadband (GB)'
-        }));
+        if (gbResponse.error) console.error('GB fetch error:', gbResponse.error);
+        if (mbResponse.error) console.error('MB fetch error:', mbResponse.error);
 
-        const mbCustomers = (mbData.data || []).map((customer: any) => ({
-          id: customer.CustomerId?.toString() || Math.random().toString(),
-          customer_id: customer.CustomerId?.toString() || 'N/A',
-          name: customer.CustomerName || 'Unknown',
-          phone: 'N/A',
-          service_type: 'Broadband (MB)'
-        }));
+        const gbCustomers = (gbResponse.data || [])
+          .filter((customer: any) => customer.CustomerName && customer.CustomerName.trim() !== '')
+          .map((customer: any) => ({
+            id: `gb_${customer.CustomerId || Math.random()}`,
+            customer_id: customer.CustomerId?.toString() || 'N/A',
+            name: customer.CustomerName.trim(),
+            phone: 'N/A',
+            service_type: 'Broadband (GB)',
+            address: 'N/A',
+            city: 'N/A',
+            package_name: customer.Package || 'N/A'
+          }));
 
-        data = [...gbCustomers, ...mbCustomers].filter(c => c.name !== 'Unknown');
+        const mbCustomers = (mbResponse.data || [])
+          .filter((customer: any) => customer.CustomerName && customer.CustomerName.trim() !== '')
+          .map((customer: any) => ({
+            id: `mb_${customer.CustomerId || Math.random()}`,
+            customer_id: customer.CustomerId?.toString() || 'N/A',
+            name: customer.CustomerName.trim(),
+            phone: 'N/A',
+            service_type: 'Broadband (MB)',
+            address: 'N/A',
+            city: 'N/A',
+            package_name: customer.Package || 'N/A'
+          }));
+
+        data = [...gbCustomers, ...mbCustomers];
       }
 
-      setCustomers(data);
+      // Remove duplicates and sort by name
+      const uniqueCustomers = data.filter((customer, index, self) => 
+        index === self.findIndex((c) => c.customer_id === customer.customer_id && c.name === customer.name)
+      ).sort((a, b) => a.name.localeCompare(b.name));
+
+      setCustomers(uniqueCustomers);
     } catch (error) {
       console.error('Error fetching customers:', error);
       toast({
@@ -119,7 +153,8 @@ export const CustomerSelector: React.FC<CustomerSelectorProps> = ({
   const filteredCustomers = customers.filter(customer =>
     customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     customer.customer_id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    customer.phone?.toLowerCase().includes(searchTerm.toLowerCase())
+    (customer.phone && customer.phone !== 'N/A' && customer.phone.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (customer.package_name && customer.package_name.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
   const handleInputChange = (value: string) => {
@@ -186,8 +221,13 @@ export const CustomerSelector: React.FC<CustomerSelectorProps> = ({
                     <div className="flex flex-col">
                       <span className="font-medium">{customer.name}</span>
                       <span className="text-xs text-muted-foreground">
-                        {customer.customer_id} • {customer.phone} • {customer.service_type}
+                        ID: {customer.customer_id} • {customer.phone !== 'N/A' ? customer.phone : 'No phone'} • {customer.service_type}
                       </span>
+                      {customer.package_name && customer.package_name !== 'N/A' && (
+                        <span className="text-xs text-muted-foreground">
+                          Package: {customer.package_name}
+                        </span>
+                      )}
                     </div>
                   </CommandItem>
                 ))}
@@ -203,8 +243,14 @@ export const CustomerSelector: React.FC<CustomerSelectorProps> = ({
       )}
 
       {selectedCustomerName && (
-        <div className="text-sm text-muted-foreground">
-          Selected: {selectedCustomerName}
+        <div className="text-sm text-muted-foreground bg-muted/50 rounded-md p-2">
+          <div className="font-medium">Selected: {selectedCustomerName}</div>
+          {customers.find(c => c.name === selectedCustomerName) && (
+            <div className="text-xs mt-1">
+              ID: {customers.find(c => c.name === selectedCustomerName)?.customer_id} • 
+              {customers.find(c => c.name === selectedCustomerName)?.service_type}
+            </div>
+          )}
         </div>
       )}
     </div>

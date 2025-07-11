@@ -14,21 +14,12 @@ interface Customer {
   customer_id: string;
   name: string;
   phone: string;
-  email: string;
+  email?: string;
   address: string;
   city: string;
-  state: string;
-  pincode: string;
   service_type: string;
-  plan_name: string;
-  plan_details: string;
-  monthly_amount: number;
-  connection_date: string;
+  package_name: string;
   status: string;
-  last_payment_date: string;
-  next_due_date: string;
-  total_paid: number;
-  notes: string;
 }
 
 export const UserManagement = () => {
@@ -47,16 +38,88 @@ export const UserManagement = () => {
   const fetchCustomers = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase
-        .from('customers')
-        .select('*')
-        .order('created_at', { ascending: false });
+      let allCustomers: Customer[] = [];
 
-      if (error) {
-        throw error;
-      }
+      // Fetch from JC and BC tables for Cable TV
+      const [jcResponse, bcResponse, gbResponse, mbResponse] = await Promise.all([
+        supabase.from('JC').select('*').not('NAME', 'is', null),
+        supabase.from('BC').select('*').not('NAME', 'is', null),
+        supabase.from('GB').select('*').not('CustomerName', 'is', null),
+        supabase.from('MB').select('*').not('CustomerName', 'is', null)
+      ]);
 
-      setCustomers(data || []);
+      // Process JC customers
+      const jcCustomers = (jcResponse.data || [])
+        .filter((customer: any) => customer.NAME && customer.NAME.trim() !== '')
+        .map((customer: any) => ({
+          id: `jc_${customer["VC No."] || customer.CONTRACT_NUMBER || Math.random()}`,
+          customer_id: customer["VC No."]?.toString() || customer.CONTRACT_NUMBER?.toString() || 'N/A',
+          name: customer.NAME.trim(),
+          phone: customer.MOBILE_PHONE?.toString() || 'N/A',
+          email: customer.EMAIL || undefined,
+          service_type: 'Cable TV (JC)',
+          address: [customer.ADDRESS1, customer.ADDRESS2, customer.ADDRESS3].filter(Boolean).join(', '),
+          city: customer.CITY || 'N/A',
+          package_name: customer.PACKAGE_NAME || 'Standard Package',
+          status: customer.STATUS === 'ACTIVE' ? 'Active' : customer.STATUS || 'Unknown'
+        }));
+
+      // Process BC customers
+      const bcCustomers = (bcResponse.data || [])
+        .filter((customer: any) => customer.NAME && customer.NAME.trim() !== '')
+        .map((customer: any) => ({
+          id: `bc_${customer["VC No."] || customer.CONTRACT_NUMBER || Math.random()}`,
+          customer_id: customer["VC No."]?.toString() || customer.CONTRACT_NUMBER?.toString() || 'N/A',
+          name: customer.NAME.trim(),
+          phone: customer.MOBILE_PHONE?.toString() || 'N/A',
+          email: customer.EMAIL || undefined,
+          service_type: 'Cable TV (BC)',
+          address: [customer.ADDRESS1, customer.ADDRESS2, customer.ADDRESS3].filter(Boolean).join(', '),
+          city: customer.CITY || 'N/A',
+          package_name: customer.PACKAGE_NAME || 'Standard Package',
+          status: customer.STATUS === 'ACTIVE' ? 'Active' : customer.STATUS || 'Unknown'
+        }));
+
+      // Process GB customers
+      const gbCustomers = (gbResponse.data || [])
+        .filter((customer: any) => customer.CustomerName && customer.CustomerName.trim() !== '')
+        .map((customer: any) => ({
+          id: `gb_${customer.CustomerId || Math.random()}`,
+          customer_id: customer.CustomerId?.toString() || 'N/A',
+          name: customer.CustomerName.trim(),
+          phone: 'N/A',
+          email: undefined,
+          service_type: 'Broadband (GB)',
+          address: 'N/A',
+          city: 'N/A',
+          package_name: customer.Package || 'Standard Package',
+          status: 'Active'
+        }));
+
+      // Process MB customers
+      const mbCustomers = (mbResponse.data || [])
+        .filter((customer: any) => customer.CustomerName && customer.CustomerName.trim() !== '')
+        .map((customer: any) => ({
+          id: `mb_${customer.CustomerId || Math.random()}`,
+          customer_id: customer.CustomerId?.toString() || 'N/A',
+          name: customer.CustomerName.trim(),
+          phone: 'N/A',
+          email: undefined,
+          service_type: 'Broadband (MB)',
+          address: 'N/A',
+          city: 'N/A',
+          package_name: customer.Package || 'Standard Package',
+          status: 'Active'
+        }));
+
+      allCustomers = [...jcCustomers, ...bcCustomers, ...gbCustomers, ...mbCustomers];
+
+      // Remove duplicates and sort by name
+      const uniqueCustomers = allCustomers.filter((customer, index, self) => 
+        index === self.findIndex((c) => c.customer_id === customer.customer_id && c.name === customer.name)
+      ).sort((a, b) => a.name.localeCompare(b.name));
+
+      setCustomers(uniqueCustomers);
     } catch (error) {
       console.error('Error fetching customers:', error);
       toast({
@@ -73,21 +136,21 @@ export const UserManagement = () => {
     const matchesSearch = customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          customer.customer_id.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          customer.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         customer.phone?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         customer.email?.toLowerCase().includes(searchTerm.toLowerCase());
+                         (customer.phone && customer.phone !== 'N/A' && customer.phone.toLowerCase().includes(searchTerm.toLowerCase())) ||
+                         (customer.email && customer.email.toLowerCase().includes(searchTerm.toLowerCase())) ||
+                         customer.package_name.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === 'all' || customer.status.toLowerCase() === statusFilter;
-    const matchesService = serviceFilter === 'all' || customer.service_type === serviceFilter;
+    const matchesService = serviceFilter === 'all' || customer.service_type.includes(serviceFilter);
     const matchesCity = cityFilter === 'all' || customer.city === cityFilter;
     
     return matchesSearch && matchesStatus && matchesService && matchesCity;
   });
 
-  const totalRevenue = filteredCustomers.reduce((sum, customer) => sum + (customer.total_paid || 0), 0);
-  const averageRevenue = totalRevenue / filteredCustomers.length || 0;
-  const monthlyRevenue = filteredCustomers.reduce((sum, customer) => sum + customer.monthly_amount, 0);
+  const totalCustomers = filteredCustomers.length;
+  const activeCustomers = filteredCustomers.filter(c => c.status === 'Active').length;
 
-  // Get unique cities for filter
-  const uniqueCities = [...new Set(customers.map(c => c.city))].filter(Boolean).sort();
+  // Get unique cities for filter (excluding 'N/A')
+  const uniqueCities = [...new Set(customers.map(c => c.city))].filter(city => city && city !== 'N/A').sort();
 
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
@@ -100,12 +163,9 @@ export const UserManagement = () => {
   };
 
   const getServiceColor = (service: string) => {
-    switch (service) {
-      case 'TV': return 'outline';
-      case 'Internet': return 'secondary';
-      case 'TV + Internet': return 'default';
-      default: return 'outline';
-    }
+    if (service.includes('TV')) return 'outline';
+    if (service.includes('Broadband')) return 'secondary';
+    return 'default';
   };
 
   if (loading) {
@@ -135,35 +195,25 @@ export const UserManagement = () => {
           </div>
         </div>
         
-        {/* Enhanced Summary Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mt-4">
+        {/* Summary Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
           <div className="bg-muted/50 p-3 rounded-lg">
             <div className="text-sm text-muted-foreground">Total Customers</div>
-            <div className="text-xl font-bold">{filteredCustomers.length}</div>
-            <div className="text-xs text-muted-foreground">of {customers.length}</div>
+            <div className="text-xl font-bold">{totalCustomers}</div>
+            <div className="text-xs text-muted-foreground">of {customers.length} total</div>
           </div>
           <div className="bg-muted/50 p-3 rounded-lg">
-            <div className="text-sm text-muted-foreground">Total Revenue</div>
-            <div className="text-xl font-bold">₹{totalRevenue.toLocaleString()}</div>
-            <div className="text-xs text-muted-foreground">All time</div>
-          </div>
-          <div className="bg-muted/50 p-3 rounded-lg">
-            <div className="text-sm text-muted-foreground">Monthly Revenue</div>
-            <div className="text-xl font-bold">₹{monthlyRevenue.toLocaleString()}</div>
-            <div className="text-xs text-muted-foreground">Current</div>
-          </div>
-          <div className="bg-muted/50 p-3 rounded-lg">
-            <div className="text-sm text-muted-foreground">Avg Revenue/Customer</div>
-            <div className="text-xl font-bold">₹{Math.round(averageRevenue).toLocaleString()}</div>
-            <div className="text-xs text-muted-foreground">Lifetime</div>
-          </div>
-          <div className="bg-muted/50 p-3 rounded-lg">
-            <div className="text-sm text-muted-foreground">Active Rate</div>
-            <div className="text-xl font-bold text-green-600">
-              {Math.round((filteredCustomers.filter(c => c.status === 'Active').length / filteredCustomers.length) * 100)}%
-            </div>
+            <div className="text-sm text-muted-foreground">Active Customers</div>
+            <div className="text-xl font-bold text-green-600">{activeCustomers}</div>
             <div className="text-xs text-muted-foreground">
-              {filteredCustomers.filter(c => c.status === 'Active').length} active
+              {totalCustomers > 0 ? Math.round((activeCustomers / totalCustomers) * 100) : 0}% active rate
+            </div>
+          </div>
+          <div className="bg-muted/50 p-3 rounded-lg">
+            <div className="text-sm text-muted-foreground">Service Distribution</div>
+            <div className="text-sm">
+              <div>TV: {filteredCustomers.filter(c => c.service_type.includes('TV')).length}</div>
+              <div>Broadband: {filteredCustomers.filter(c => c.service_type.includes('Broadband')).length}</div>
             </div>
           </div>
         </div>
@@ -173,7 +223,7 @@ export const UserManagement = () => {
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Search by name, ID, address, phone, or email..."
+              placeholder="Search by name, ID, address, phone, email, or package..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10"
@@ -197,9 +247,8 @@ export const UserManagement = () => {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Services</SelectItem>
-              <SelectItem value="TV">TV Only</SelectItem>
-              <SelectItem value="Internet">Internet Only</SelectItem>
-              <SelectItem value="TV + Internet">TV + Internet</SelectItem>
+              <SelectItem value="TV">Cable TV</SelectItem>
+              <SelectItem value="Broadband">Broadband</SelectItem>
             </SelectContent>
           </Select>
           <Select value={cityFilter} onValueChange={setCityFilter}>
@@ -230,13 +279,13 @@ export const UserManagement = () => {
                   </div>
                   <div className="text-sm text-muted-foreground flex items-center gap-1">
                     <MapPin className="h-3 w-3" />
-                    {customer.address}, {customer.city}
+                    {customer.address !== 'N/A' ? `${customer.address}, ${customer.city}` : customer.city}
                   </div>
                   <div className="text-sm">
                     <span className="text-muted-foreground">ID:</span> {customer.customer_id}
                   </div>
                   <div className="flex items-center gap-3 text-sm">
-                    {customer.phone && (
+                    {customer.phone && customer.phone !== 'N/A' && (
                       <div className="flex items-center gap-1">
                         <Phone className="h-3 w-3" />
                         {customer.phone}
@@ -251,38 +300,19 @@ export const UserManagement = () => {
                   </div>
                 </div>
 
-                {/* Service & Financial Info */}
+                {/* Service Info */}
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
                     <Badge variant={getServiceColor(customer.service_type)}>
                       {customer.service_type}
                     </Badge>
-                    <span className="font-medium">₹{customer.monthly_amount}/month</span>
                   </div>
                   <div className="text-sm">
-                    <span className="text-muted-foreground">Plan:</span> {customer.plan_name}
+                    <span className="text-muted-foreground">Package:</span> {customer.package_name}
                   </div>
-                  <div className="text-sm text-muted-foreground">
-                    {customer.plan_details}
+                  <div className="text-sm">
+                    <span className="text-muted-foreground">Customer ID:</span> {customer.customer_id}
                   </div>
-                  <div className="text-sm text-muted-foreground flex items-center gap-1">
-                    <CreditCard className="h-3 w-3" />
-                    Total Paid: ₹{customer.total_paid?.toLocaleString() || '0'}
-                  </div>
-                  <div className="text-sm text-muted-foreground flex items-center gap-1">
-                    <Calendar className="h-3 w-3" />
-                    Since: {new Date(customer.connection_date).toLocaleDateString()}
-                  </div>
-                  {customer.last_payment_date && (
-                    <div className="text-sm">
-                      <span className="text-muted-foreground">Last Payment:</span> {new Date(customer.last_payment_date).toLocaleDateString()}
-                    </div>
-                  )}
-                  {customer.next_due_date && (
-                    <div className="text-sm">
-                      <span className="text-muted-foreground">Next Due:</span> {new Date(customer.next_due_date).toLocaleDateString()}
-                    </div>
-                  )}
                 </div>
 
                 {/* Actions */}
