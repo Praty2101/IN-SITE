@@ -7,6 +7,11 @@ export type Json =
   | Json[]
 
 export type Database = {
+  // Allows to automatically instanciate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
+  __InternalSupabase: {
+    PostgrestVersion: "12.2.3 (519615d)"
+  }
   public: {
     Tables: {
       alliance_plans: {
@@ -42,6 +47,93 @@ export type Database = {
           speed?: string
           updated_at?: string
           validity_days?: number
+        }
+        Relationships: []
+      }
+      BC: {
+        Row: {
+          ADDRESS1: string | null
+          ADDRESS2: string | null
+          ADDRESS3: string | null
+          CITY: string | null
+          CONTRACT_NUMBER: number | null
+          DISTRICT: string | null
+          EFFECTIVE_DATE: string | null
+          EMAIL: string | null
+          END_DATE: string | null
+          ENTITY_CODE: string | null
+          MOBILE_PHONE: number | null
+          NAME: string | null
+          NETWORK_NAME: string | null
+          ORDER_DATE: string | null
+          PACKAGE_NAME: string | null
+          PAY_TERM: string | null
+          PLAN_CODE: string | null
+          PLAN_TYPE: string | null
+          START_DATE: string | null
+          STATE: string | null
+          STATUS: string | null
+          STB_NUMBER: string | null
+          STB_TYPE: string | null
+          "VC No.": number | null
+          VC_CARD: string | null
+          ZIPCODE: number | null
+        }
+        Insert: {
+          ADDRESS1?: string | null
+          ADDRESS2?: string | null
+          ADDRESS3?: string | null
+          CITY?: string | null
+          CONTRACT_NUMBER?: number | null
+          DISTRICT?: string | null
+          EFFECTIVE_DATE?: string | null
+          EMAIL?: string | null
+          END_DATE?: string | null
+          ENTITY_CODE?: string | null
+          MOBILE_PHONE?: number | null
+          NAME?: string | null
+          NETWORK_NAME?: string | null
+          ORDER_DATE?: string | null
+          PACKAGE_NAME?: string | null
+          PAY_TERM?: string | null
+          PLAN_CODE?: string | null
+          PLAN_TYPE?: string | null
+          START_DATE?: string | null
+          STATE?: string | null
+          STATUS?: string | null
+          STB_NUMBER?: string | null
+          STB_TYPE?: string | null
+          "VC No."?: number | null
+          VC_CARD?: string | null
+          ZIPCODE?: number | null
+        }
+        Update: {
+          ADDRESS1?: string | null
+          ADDRESS2?: string | null
+          ADDRESS3?: string | null
+          CITY?: string | null
+          CONTRACT_NUMBER?: number | null
+          DISTRICT?: string | null
+          EFFECTIVE_DATE?: string | null
+          EMAIL?: string | null
+          END_DATE?: string | null
+          ENTITY_CODE?: string | null
+          MOBILE_PHONE?: number | null
+          NAME?: string | null
+          NETWORK_NAME?: string | null
+          ORDER_DATE?: string | null
+          PACKAGE_NAME?: string | null
+          PAY_TERM?: string | null
+          PLAN_CODE?: string | null
+          PLAN_TYPE?: string | null
+          START_DATE?: string | null
+          STATE?: string | null
+          STATUS?: string | null
+          STB_NUMBER?: string | null
+          STB_TYPE?: string | null
+          "VC No."?: number | null
+          VC_CARD?: string | null
+          ZIPCODE?: number | null
         }
         Relationships: []
       }
@@ -114,6 +206,42 @@ export type Database = {
           status?: string
           total_paid?: number | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      GB: {
+        Row: {
+          Cashier: string | null
+          Company: string | null
+          CustomerId: number | null
+          CustomerName: string | null
+          IP: string | null
+          Package: string | null
+          PackageAmount: number | null
+          TaxAmount: number | null
+          TotalAmount: number | null
+        }
+        Insert: {
+          Cashier?: string | null
+          Company?: string | null
+          CustomerId?: number | null
+          CustomerName?: string | null
+          IP?: string | null
+          Package?: string | null
+          PackageAmount?: number | null
+          TaxAmount?: number | null
+          TotalAmount?: number | null
+        }
+        Update: {
+          Cashier?: string | null
+          Company?: string | null
+          CustomerId?: number | null
+          CustomerName?: string | null
+          IP?: string | null
+          Package?: string | null
+          PackageAmount?: number | null
+          TaxAmount?: number | null
+          TotalAmount?: number | null
         }
         Relationships: []
       }
@@ -222,6 +350,129 @@ export type Database = {
         }
         Relationships: []
       }
+      JC: {
+        Row: {
+          ADDRESS1: string | null
+          ADDRESS2: string | null
+          ADDRESS3: string | null
+          CITY: string | null
+          CONTRACT_NUMBER: number | null
+          DISTRICT: string | null
+          EFFECTIVE_DATE: string | null
+          EMAIL: string | null
+          END_DATE: string | null
+          ENTITY_CODE: string | null
+          MOBILE_PHONE: number | null
+          NAME: string | null
+          NETWORK_NAME: string | null
+          ORDER_DATE: string | null
+          PACKAGE_NAME: string | null
+          PAY_TERM: string | null
+          PLAN_CODE: string | null
+          PLAN_TYPE: string | null
+          START_DATE: string | null
+          STATE: string | null
+          STATUS: string | null
+          STB_NUMBER: string | null
+          STB_TYPE: string | null
+          "VC No.": number | null
+          VC_CARD: string | null
+          ZIPCODE: number | null
+        }
+        Insert: {
+          ADDRESS1?: string | null
+          ADDRESS2?: string | null
+          ADDRESS3?: string | null
+          CITY?: string | null
+          CONTRACT_NUMBER?: number | null
+          DISTRICT?: string | null
+          EFFECTIVE_DATE?: string | null
+          EMAIL?: string | null
+          END_DATE?: string | null
+          ENTITY_CODE?: string | null
+          MOBILE_PHONE?: number | null
+          NAME?: string | null
+          NETWORK_NAME?: string | null
+          ORDER_DATE?: string | null
+          PACKAGE_NAME?: string | null
+          PAY_TERM?: string | null
+          PLAN_CODE?: string | null
+          PLAN_TYPE?: string | null
+          START_DATE?: string | null
+          STATE?: string | null
+          STATUS?: string | null
+          STB_NUMBER?: string | null
+          STB_TYPE?: string | null
+          "VC No."?: number | null
+          VC_CARD?: string | null
+          ZIPCODE?: number | null
+        }
+        Update: {
+          ADDRESS1?: string | null
+          ADDRESS2?: string | null
+          ADDRESS3?: string | null
+          CITY?: string | null
+          CONTRACT_NUMBER?: number | null
+          DISTRICT?: string | null
+          EFFECTIVE_DATE?: string | null
+          EMAIL?: string | null
+          END_DATE?: string | null
+          ENTITY_CODE?: string | null
+          MOBILE_PHONE?: number | null
+          NAME?: string | null
+          NETWORK_NAME?: string | null
+          ORDER_DATE?: string | null
+          PACKAGE_NAME?: string | null
+          PAY_TERM?: string | null
+          PLAN_CODE?: string | null
+          PLAN_TYPE?: string | null
+          START_DATE?: string | null
+          STATE?: string | null
+          STATUS?: string | null
+          STB_NUMBER?: string | null
+          STB_TYPE?: string | null
+          "VC No."?: number | null
+          VC_CARD?: string | null
+          ZIPCODE?: number | null
+        }
+        Relationships: []
+      }
+      MB: {
+        Row: {
+          Cashier: string | null
+          Company: string | null
+          CustomerId: number | null
+          CustomerName: string | null
+          IP: string | null
+          Package: string | null
+          PackageAmount: number | null
+          TaxAmount: number | null
+          TotalAmount: number | null
+        }
+        Insert: {
+          Cashier?: string | null
+          Company?: string | null
+          CustomerId?: number | null
+          CustomerName?: string | null
+          IP?: string | null
+          Package?: string | null
+          PackageAmount?: number | null
+          TaxAmount?: number | null
+          TotalAmount?: number | null
+        }
+        Update: {
+          Cashier?: string | null
+          Company?: string | null
+          CustomerId?: number | null
+          CustomerName?: string | null
+          IP?: string | null
+          Package?: string | null
+          PackageAmount?: number | null
+          TaxAmount?: number | null
+          TotalAmount?: number | null
+        }
+        Relationships: []
+      }
       siti_packs: {
         Row: {
           channel_count: number
@@ -268,21 +519,25 @@ export type Database = {
   }
 }
 
-type DefaultSchema = Database[Extract<keyof Database, "public">]
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
+
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
 
 export type Tables<
   DefaultSchemaTableNameOrOptions extends
     | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
-    | { schema: keyof Database },
+    | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof Database
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof (Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-        Database[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
     : never = never,
-> = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
-  ? (Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-      Database[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
       Row: infer R
     }
     ? R
@@ -300,14 +555,16 @@ export type Tables<
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
-    | { schema: keyof Database },
+    | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof Database
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
-> = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
-  ? Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Insert: infer I
     }
     ? I
@@ -323,14 +580,16 @@ export type TablesInsert<
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
-    | { schema: keyof Database },
+    | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof Database
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
-> = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
-  ? Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Update: infer U
     }
     ? U
@@ -346,14 +605,16 @@ export type TablesUpdate<
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
     | keyof DefaultSchema["Enums"]
-    | { schema: keyof Database },
+    | { schema: keyof DatabaseWithoutInternals },
   EnumName extends DefaultSchemaEnumNameOrOptions extends {
-    schema: keyof Database
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof Database[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
     : never = never,
-> = DefaultSchemaEnumNameOrOptions extends { schema: keyof Database }
-  ? Database[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+> = DefaultSchemaEnumNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
   : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
     ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
     : never
@@ -361,14 +622,16 @@ export type Enums<
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
     | keyof DefaultSchema["CompositeTypes"]
-    | { schema: keyof Database },
+    | { schema: keyof DatabaseWithoutInternals },
   CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
-    schema: keyof Database
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
     : never = never,
-> = PublicCompositeTypeNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+> = PublicCompositeTypeNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
   : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
     ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
     : never

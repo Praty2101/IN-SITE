@@ -19,12 +19,14 @@ interface CustomerSelectorProps {
   selectedCustomerId: string;
   selectedCustomerName: string;
   onCustomerChange: (customerId: string, customerName: string) => void;
+  serviceType: string;
 }
 
 export const CustomerSelector: React.FC<CustomerSelectorProps> = ({
   selectedCustomerId,
   selectedCustomerName,
-  onCustomerChange
+  onCustomerChange,
+  serviceType
 }) => {
   const { toast } = useToast();
   const [customers, setCustomers] = useState<Customer[]>([]);
@@ -34,27 +36,74 @@ export const CustomerSelector: React.FC<CustomerSelectorProps> = ({
   const [inputValue, setInputValue] = useState(selectedCustomerName);
 
   useEffect(() => {
-    fetchCustomers();
-  }, []);
+    if (serviceType) {
+      fetchCustomers();
+    }
+  }, [serviceType]);
 
   useEffect(() => {
     setInputValue(selectedCustomerName);
   }, [selectedCustomerName]);
 
   const fetchCustomers = async () => {
+    if (!serviceType) return;
+
     try {
       setLoading(true);
-      const { data, error } = await supabase
-        .from('customers')
-        .select('id, customer_id, name, phone, service_type')
-        .eq('status', 'Active')
-        .order('name');
+      let data: any[] = [];
 
-      if (error) {
-        throw error;
+      if (serviceType === 'TV') {
+        // Fetch from JC and BC tables for Cable TV
+        const [jcData, bcData] = await Promise.all([
+          supabase.from('JC').select('*'),
+          supabase.from('BC').select('*')
+        ]);
+
+        const jcCustomers = (jcData.data || []).map((customer: any) => ({
+          id: customer["VC No."]?.toString() || customer.CONTRACT_NUMBER?.toString() || Math.random().toString(),
+          customer_id: customer["VC No."]?.toString() || customer.CONTRACT_NUMBER?.toString() || 'N/A',
+          name: customer.NAME || 'Unknown',
+          phone: customer.MOBILE_PHONE?.toString() || 'N/A',
+          service_type: 'Cable TV (JC)'
+        }));
+
+        const bcCustomers = (bcData.data || []).map((customer: any) => ({
+          id: customer["VC No."]?.toString() || customer.CONTRACT_NUMBER?.toString() || Math.random().toString(),
+          customer_id: customer["VC No."]?.toString() || customer.CONTRACT_NUMBER?.toString() || 'N/A',
+          name: customer.NAME || 'Unknown',
+          phone: customer.MOBILE_PHONE?.toString() || 'N/A',
+          service_type: 'Cable TV (BC)'
+        }));
+
+        data = [...jcCustomers, ...bcCustomers].filter(c => c.name !== 'Unknown');
+
+      } else if (serviceType === 'Internet') {
+        // Fetch from GB and MB tables for Broadband
+        const [gbData, mbData] = await Promise.all([
+          supabase.from('GB').select('*'),
+          supabase.from('MB').select('*')
+        ]);
+
+        const gbCustomers = (gbData.data || []).map((customer: any) => ({
+          id: customer.CustomerId?.toString() || Math.random().toString(),
+          customer_id: customer.CustomerId?.toString() || 'N/A',
+          name: customer.CustomerName || 'Unknown',
+          phone: 'N/A',
+          service_type: 'Broadband (GB)'
+        }));
+
+        const mbCustomers = (mbData.data || []).map((customer: any) => ({
+          id: customer.CustomerId?.toString() || Math.random().toString(),
+          customer_id: customer.CustomerId?.toString() || 'N/A',
+          name: customer.CustomerName || 'Unknown',
+          phone: 'N/A',
+          service_type: 'Broadband (MB)'
+        }));
+
+        data = [...gbCustomers, ...mbCustomers].filter(c => c.name !== 'Unknown');
       }
 
-      setCustomers(data || []);
+      setCustomers(data);
     } catch (error) {
       console.error('Error fetching customers:', error);
       toast({
@@ -108,12 +157,12 @@ export const CustomerSelector: React.FC<CustomerSelectorProps> = ({
   return (
     <div className="relative space-y-2">
       <Input
-        placeholder="Type customer name to search..."
+        placeholder={serviceType ? "Type customer name to search..." : "Select service type first"}
         value={inputValue}
         onChange={(e) => handleInputChange(e.target.value)}
         onFocus={handleInputFocus}
         onBlur={handleInputBlur}
-        disabled={loading}
+        disabled={loading || !serviceType}
         className="w-full"
       />
 

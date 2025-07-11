@@ -145,6 +145,7 @@ export const RechargeForm: React.FC<RechargeFormProps> = ({ onAddRecharge }) => 
             selectedCustomerId={newRecharge.customerId}
             selectedCustomerName={newRecharge.customer}
             onCustomerChange={handleCustomerChange}
+            serviceType={newRecharge.service}
           />
         </div>
         
