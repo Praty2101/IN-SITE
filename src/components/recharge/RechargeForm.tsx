@@ -11,7 +11,7 @@ import { SelectedPackDisplay } from './SelectedPackDisplay';
 import { CustomerSelector } from './CustomerSelector';
 
 interface Recharge {
-  id: number;
+  id: string | number;
   customer: string;
   service: string;
   pack: string;
@@ -21,6 +21,9 @@ interface Recharge {
   time: string;
   date: string;
   status: 'completed' | 'pending' | 'failed';
+  customerId?: string;
+  serviceType?: string;
+  company?: string;
 }
 
 interface RechargeFormProps {
@@ -69,13 +72,22 @@ export const RechargeForm: React.FC<RechargeFormProps> = ({ onAddRecharge }) => 
       operatorPrice = amount;
     }
 
+    // Extract customer source info for database storage
+    const selectedCustomer = newRecharge.customerId ? {
+      id: newRecharge.customerId,
+      name: newRecharge.customer
+    } : null;
+
     onAddRecharge({
       customer: newRecharge.customer,
       service: newRecharge.service,
       pack: packName,
       amount,
       customerPrice,
-      operatorPrice
+      operatorPrice,
+      customerId: selectedCustomer?.id,
+      serviceType: newRecharge.service,
+      company: newRecharge.company
     });
 
     setNewRecharge({ 

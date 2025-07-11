@@ -6,7 +6,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Trash2 } from 'lucide-react';
 
 interface Recharge {
-  id: number;
+  id: string | number;
   customer: string;
   service: string;
   pack: string;
@@ -20,8 +20,8 @@ interface Recharge {
 
 interface RechargeListProps {
   recharges: Recharge[];
-  onDeleteRecharge: (id: number) => void;
-  onToggleStatus: (id: number) => void;
+  onDeleteRecharge: (id: string | number) => void;
+  onToggleStatus: (id: string | number) => void;
 }
 
 export const RechargeList: React.FC<RechargeListProps> = ({

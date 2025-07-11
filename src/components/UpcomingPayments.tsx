@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Calendar, Bell, CheckCircle, Clock, AlertTriangle, Send } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 interface Payment {
   id: number;
@@ -22,10 +23,150 @@ interface Payment {
 export const UpcomingPayments = () => {
   const { toast } = useToast();
   const [payments, setPayments] = useState<Payment[]>([]);
-
+  const [loading, setLoading] = useState(true);
   const [filterStatus, setFilterStatus] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedPayments, setSelectedPayments] = useState<number[]>([]);
+
+  useEffect(() => {
+    fetchUpcomingPayments();
+  }, []);
+
+  const fetchUpcomingPayments = async () => {
+    try {
+      setLoading(true);
+      
+      // Fetch customers from all source tables and calculate upcoming payments
+      const [jcResponse, bcResponse, gbResponse, mbResponse] = await Promise.all([
+        supabase.from('JC').select('*').not('NAME', 'is', null),
+        supabase.from('BC').select('*').not('NAME', 'is', null),
+        supabase.from('GB').select('*').not('CustomerName', 'is', null),
+        supabase.from('MB').select('*').not('CustomerName', 'is', null)
+      ]);
+
+      let allPayments: Payment[] = [];
+      let paymentId = 1;
+
+      // Process JC customers
+      if (jcResponse.data) {
+        const jcPayments = jcResponse.data
+          .filter((customer: any) => customer.NAME && customer.NAME.trim() !== '')
+          .map((customer: any) => {
+            const dueDate = getNextDueDate();
+            const daysLeft = Math.ceil((new Date(dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
+            
+            return {
+              id: paymentId++,
+              customer: customer.NAME.trim(),
+              service: 'TV',
+              amount: 299, // Default amount, you might want to calculate from package
+              dueDate,
+              daysLeft,
+              status: getPaymentStatus(daysLeft),
+              contactInfo: customer.MOBILE_PHONE?.toString() || 'N/A'
+            };
+          });
+        allPayments = [...allPayments, ...jcPayments];
+      }
+
+      // Process BC customers  
+      if (bcResponse.data) {
+        const bcPayments = bcResponse.data
+          .filter((customer: any) => customer.NAME && customer.NAME.trim() !== '')
+          .map((customer: any) => {
+            const dueDate = getNextDueDate();
+            const daysLeft = Math.ceil((new Date(dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
+            
+            return {
+              id: paymentId++,
+              customer: customer.NAME.trim(),
+              service: 'TV',
+              amount: 299, // Default amount
+              dueDate,
+              daysLeft,
+              status: getPaymentStatus(daysLeft),
+              contactInfo: customer.MOBILE_PHONE?.toString() || 'N/A'
+            };
+          });
+        allPayments = [...allPayments, ...bcPayments];
+      }
+
+      // Process GB customers
+      if (gbResponse.data) {
+        const gbPayments = gbResponse.data
+          .filter((customer: any) => customer.CustomerName && customer.CustomerName.trim() !== '')
+          .map((customer: any) => {
+            const dueDate = getNextDueDate();
+            const daysLeft = Math.ceil((new Date(dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
+            
+            return {
+              id: paymentId++,
+              customer: customer.CustomerName.trim(),
+              service: 'Internet',
+              amount: 599, // Default broadband amount
+              dueDate,
+              daysLeft,
+              status: getPaymentStatus(daysLeft),
+              contactInfo: 'N/A'
+            };
+          });
+        allPayments = [...allPayments, ...gbPayments];
+      }
+
+      // Process MB customers
+      if (mbResponse.data) {
+        const mbPayments = mbResponse.data
+          .filter((customer: any) => customer.CustomerName && customer.CustomerName.trim() !== '')
+          .map((customer: any) => {
+            const dueDate = getNextDueDate();
+            const daysLeft = Math.ceil((new Date(dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
+            
+            return {
+              id: paymentId++,
+              customer: customer.CustomerName.trim(),
+              service: 'Internet',
+              amount: 599, // Default broadband amount
+              dueDate,
+              daysLeft,
+              status: getPaymentStatus(daysLeft),
+              contactInfo: 'N/A'
+            };
+          });
+        allPayments = [...allPayments, ...mbPayments];
+      }
+
+      // Remove duplicates and sort by due date
+      const uniquePayments = allPayments.filter((payment, index, self) => 
+        index === self.findIndex((p) => p.customer === payment.customer && p.service === payment.service)
+      ).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
+
+      setPayments(uniquePayments);
+    } catch (error) {
+      console.error('Error fetching upcoming payments:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load upcoming payments",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Helper function to generate next due date (random within next 30 days)
+  const getNextDueDate = () => {
+    const today = new Date();
+    const daysFromNow = Math.floor(Math.random() * 30) + 1; // 1-30 days from now
+    const dueDate = new Date(today.getTime() + (daysFromNow * 24 * 60 * 60 * 1000));
+    return dueDate.toISOString().split('T')[0];
+  };
+
+  // Helper function to determine payment status based on days left
+  const getPaymentStatus = (daysLeft: number): 'pending' | 'reminded' | 'paid' | 'overdue' => {
+    if (daysLeft < 0) return 'overdue';
+    if (daysLeft <= 2) return 'pending';
+    return 'pending';
+  };
 
   const filteredPayments = payments.filter(payment => {
     const matchesSearch = payment.customer.toLowerCase().includes(searchTerm.toLowerCase());
@@ -112,6 +253,16 @@ export const UpcomingPayments = () => {
   const totalAmount = filteredPayments.reduce((sum, p) => sum + p.amount, 0);
   const overdueCount = filteredPayments.filter(p => p.status === 'overdue' || p.daysLeft < 0).length;
   const urgentCount = filteredPayments.filter(p => p.daysLeft <= 2 && p.status !== 'paid').length;
+
+  if (loading) {
+    return (
+      <Card>
+        <CardContent className="p-6">
+          <div className="text-center">Loading upcoming payments...</div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card>

@@ -401,6 +401,57 @@ export type Database = {
         }
         Relationships: []
       }
+      recharges: {
+        Row: {
+          company: string
+          created_at: string
+          customer_name: string
+          customer_price: number
+          customer_source_id: string
+          customer_source_table: string
+          id: string
+          operator_price: number | null
+          pack_name: string
+          service_type: string
+          status: string
+          transaction_date: string
+          transaction_time: string
+          updated_at: string
+        }
+        Insert: {
+          company: string
+          created_at?: string
+          customer_name: string
+          customer_price: number
+          customer_source_id: string
+          customer_source_table: string
+          id?: string
+          operator_price?: number | null
+          pack_name: string
+          service_type: string
+          status?: string
+          transaction_date?: string
+          transaction_time?: string
+          updated_at?: string
+        }
+        Update: {
+          company?: string
+          created_at?: string
+          customer_name?: string
+          customer_price?: number
+          customer_source_id?: string
+          customer_source_table?: string
+          id?: string
+          operator_price?: number | null
+          pack_name?: string
+          service_type?: string
+          status?: string
+          transaction_date?: string
+          transaction_time?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       siti_packs: {
         Row: {
           channel_count: number
