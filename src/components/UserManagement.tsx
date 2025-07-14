@@ -320,78 +320,89 @@ export const UserManagement = () => {
         </div>
       </CardHeader>
       <CardContent>
-        <div className="space-y-3 max-h-96 overflow-y-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-96 overflow-y-auto">
           {filteredCustomers.map((customer) => (
-            <div key={customer.id} className="border rounded-lg p-4 hover:bg-muted/50 transition-colors">
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-                {/* Customer Info */}
-                <div className="space-y-2">
+            <Card key={customer.id} className="hover:shadow-md transition-shadow animate-fade-in">
+              <CardContent className="p-4">
+                <div className="space-y-3">
+                  {/* Header with name and status */}
                   <div className="flex items-center justify-between">
-                    <div className="font-medium text-lg">{customer.name}</div>
-                    <Badge variant={getStatusColor(customer.status)}>
+                    <h3 className="font-semibold text-lg truncate">{customer.name}</h3>
+                    <Badge variant={getStatusColor(customer.status)} className="text-xs">
                       {customer.status}
                     </Badge>
                   </div>
-                  <div className="text-sm text-muted-foreground flex items-center gap-1">
-                    <MapPin className="h-3 w-3" />
-                    {customer.address !== 'N/A' ? `${customer.address}, ${customer.city}` : customer.city}
-                  </div>
-                  <div className="text-sm">
-                    <span className="text-muted-foreground">ID:</span> {customer.customer_id}
-                  </div>
-                  <div className="flex items-center gap-3 text-sm">
-                    {customer.phone && customer.phone !== 'N/A' && (
-                      <div className="flex items-center gap-1">
-                        <Phone className="h-3 w-3" />
-                        {customer.phone}
-                      </div>
-                    )}
-                    {customer.email && (
-                      <div className="flex items-center gap-1">
-                        <Mail className="h-3 w-3" />
-                        {customer.email}
-                      </div>
-                    )}
-                  </div>
-                </div>
 
-                {/* Service Info */}
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2">
-                    <Badge variant={getServiceColor(customer.service_type)}>
-                      {customer.service_type}
-                    </Badge>
-                    <Badge variant="outline">
+                  {/* Customer ID and Source */}
+                  <div className="flex items-center justify-between">
+                    <div className="text-sm text-muted-foreground">
+                      ID: {customer.customer_id}
+                    </div>
+                    <Badge variant="outline" className="text-xs">
                       {customer.source_table}
                     </Badge>
                   </div>
-                  <div className="text-sm">
-                    <span className="text-muted-foreground">Package:</span> {customer.package_name}
-                  </div>
-                  {customer.package_amount && (
-                    <div className="text-sm">
-                      <span className="text-muted-foreground">Amount:</span> ₹{customer.package_amount}
-                    </div>
-                  )}
-                  <div className="text-sm">
-                    <span className="text-muted-foreground">Customer ID:</span> {customer.customer_id}
-                  </div>
-                </div>
 
-                {/* Actions */}
-                <div className="flex items-center justify-end">
-                  <Button variant="outline" size="sm">
-                    <Eye className="h-4 w-4 mr-2" />
-                    View Details
-                  </Button>
+                  {/* Service Type */}
+                  <div className="flex items-center gap-2">
+                    <Badge variant={getServiceColor(customer.service_type)} className="text-xs">
+                      {customer.service_type}
+                    </Badge>
+                  </div>
+
+                  {/* Package Information */}
+                  <div className="space-y-1">
+                    <div className="text-sm">
+                      <span className="text-muted-foreground">Package:</span> {customer.package_name}
+                    </div>
+                    {customer.package_amount && (
+                      <div className="text-sm font-medium text-green-600">
+                        ₹{customer.package_amount}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Contact Information */}
+                  <div className="space-y-1">
+                    {customer.phone && customer.phone !== 'N/A' && (
+                      <div className="flex items-center gap-1 text-sm">
+                        <Phone className="h-3 w-3 text-muted-foreground" />
+                        <span>{customer.phone}</span>
+                      </div>
+                    )}
+                    {customer.email && (
+                      <div className="flex items-center gap-1 text-sm">
+                        <Mail className="h-3 w-3 text-muted-foreground" />
+                        <span className="truncate">{customer.email}</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Location */}
+                  <div className="flex items-start gap-1 text-sm">
+                    <MapPin className="h-3 w-3 text-muted-foreground mt-0.5 flex-shrink-0" />
+                    <span className="text-muted-foreground text-xs leading-relaxed">
+                      {customer.address !== 'N/A' ? `${customer.address}, ${customer.city}` : customer.city}
+                    </span>
+                  </div>
+
+                  {/* Action Button */}
+                  <div className="pt-2 border-t">
+                    <Button variant="outline" size="sm" className="w-full hover-scale">
+                      <Eye className="h-3 w-3 mr-2" />
+                      View Details
+                    </Button>
+                  </div>
                 </div>
-              </div>
-            </div>
+              </CardContent>
+            </Card>
           ))}
         </div>
+        
         {filteredCustomers.length === 0 && (
-          <div className="text-center py-8 text-muted-foreground">
-            No customers found matching your search criteria.
+          <div className="text-center py-12 text-muted-foreground animate-fade-in">
+            <div className="text-lg font-medium">No customers found</div>
+            <div className="text-sm">Try adjusting your search criteria or dealer selection.</div>
           </div>
         )}
       </CardContent>
