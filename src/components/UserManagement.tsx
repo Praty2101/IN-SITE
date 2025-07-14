@@ -31,6 +31,7 @@ export const UserManagement = () => {
   const [statusFilter, setStatusFilter] = useState('all');
   const [serviceFilter, setServiceFilter] = useState('all');
   const [cityFilter, setCityFilter] = useState('all');
+  const [dealerFilter, setDealerFilter] = useState('all');
 
   useEffect(() => {
     fetchCustomers();
@@ -149,8 +150,9 @@ export const UserManagement = () => {
     const matchesStatus = statusFilter === 'all' || customer.status.toLowerCase() === statusFilter;
     const matchesService = serviceFilter === 'all' || customer.service_type.includes(serviceFilter);
     const matchesCity = cityFilter === 'all' || customer.city === cityFilter;
+    const matchesDealer = dealerFilter === 'all' || customer.source_table === dealerFilter;
     
-    return matchesSearch && matchesStatus && matchesService && matchesCity;
+    return matchesSearch && matchesStatus && matchesService && matchesCity && matchesDealer;
   });
 
   const totalCustomers = filteredCustomers.length;
@@ -270,6 +272,18 @@ export const UserManagement = () => {
               className="pl-10"
             />
           </div>
+          <Select value={dealerFilter} onValueChange={setDealerFilter}>
+            <SelectTrigger className="w-[150px]">
+              <SelectValue placeholder="Dealer" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Dealers</SelectItem>
+              <SelectItem value="BC">BC Database</SelectItem>
+              <SelectItem value="JC">JC Database</SelectItem>
+              <SelectItem value="GB">GB Database</SelectItem>
+              <SelectItem value="MB">MB Database</SelectItem>
+            </SelectContent>
+          </Select>
           <Select value={statusFilter} onValueChange={setStatusFilter}>
             <SelectTrigger className="w-[150px]">
               <SelectValue placeholder="Status" />
