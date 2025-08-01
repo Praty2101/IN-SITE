@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Search, Filter, Download, Eye, MapPin, Calendar, CreditCard, Plus, Phone, Mail, Database, Users, Building2, Wifi, Tv } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { AddCustomerDialog } from './AddCustomerDialog';
 
 interface Customer {
   id: string;
@@ -83,7 +84,8 @@ export const UserManagement = () => {
           status: customer.STATUS === 'ACTIVE' ? 'Active' : customer.STATUS || 'Unknown',
           source_table: 'JC',
           connection_date: customer.START_DATE || undefined,
-          last_payment: customer.ORDER_DATE || undefined
+          last_payment: customer.ORDER_DATE || undefined,
+          package_amount: undefined
         }));
 
       // Process BC customers (Cable TV)
@@ -102,7 +104,8 @@ export const UserManagement = () => {
           status: customer.STATUS === 'ACTIVE' ? 'Active' : customer.STATUS || 'Unknown',
           source_table: 'BC',
           connection_date: customer.START_DATE || undefined,
-          last_payment: customer.ORDER_DATE || undefined
+          last_payment: customer.ORDER_DATE || undefined,
+          package_amount: undefined
         }));
 
       // Process GB customers (Broadband)
@@ -483,10 +486,7 @@ export const UserManagement = () => {
             Customer Database ({customers.length} Total)
           </CardTitle>
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm">
-              <Plus className="h-4 w-4 mr-2" />
-              Add Customer
-            </Button>
+            <AddCustomerDialog onCustomerAdded={fetchCustomers} />
             <Button variant="outline" size="sm" onClick={exportCustomers}>
               <Download className="h-4 w-4 mr-2" />
               Export {selectedDealer !== 'all' ? selectedDealer : 'All'}
