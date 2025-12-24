@@ -1,5 +1,4 @@
-
-import { CapacitorConfig } from '@capacitor/core';
+import type { CapacitorConfig } from '@capacitor/core';
 
 const config: CapacitorConfig = {
   appId: 'app.lovable.e88adc09a00c461998b718656296e710',
@@ -15,7 +14,21 @@ const config: CapacitorConfig = {
       backgroundColor: '#ffffff',
       androidScaleType: 'CENTER_CROP',
       showSpinner: false
+    },
+    StatusBar: {
+      style: 'dark',
+      backgroundColor: '#ffffff'
+    },
+    Keyboard: {
+      resize: 'body',
+      resizeOnFullScreen: true
     }
+  },
+  ios: {
+    contentInset: 'automatic'
+  },
+  android: {
+    backgroundColor: '#ffffff'
   }
 };
 
